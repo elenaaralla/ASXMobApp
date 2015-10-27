@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>ASM</title>
+	<link rel="stylesheet" href="css/index.css" />
+	<link rel="stylesheet" href="themes/asm.min.css" />
+	<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+	<link rel="stylesheet" href="css/jquery.mobile.custom.structure.min.css" />
+	
+	<!-- MUSTACHE -->
+	<script src="./js/mustache.min.js"></script>
+	<script src="./js/mustache-wax.min.js"></script>
+	<script src="./js/mustache-formatters.js"></script>
+	
+	<!-- forge utilities -->
+    <script type="text/javascript" src="js/forge/debug.js"></script>
+    <script type="text/javascript" src="js/forge/util.js"></script>
+    <script type="text/javascript" src="js/forge/log.js"></script>
+    <script type="text/javascript" src="js/forge/task.js"></script>
+    <script type="text/javascript" src="js/forge/md5.js"></script>
+    <script type="text/javascript" src="js/forge/sha1.js"></script>
+    <script type="text/javascript" src="js/forge/sha256.js"></script>
+    <script type="text/javascript" src="js/forge/hmac.js"></script>
+    <script type="text/javascript" src="js/forge/pbkdf2.js"></script>
+    <script type="text/javascript" src="js/forge/pem.js"></script>
+    <script type="text/javascript" src="js/forge/asn1.js"></script>
+    <script type="text/javascript" src="js/forge/jsbn.js"></script>
+    <script type="text/javascript" src="js/forge/prng.js"></script>
+    <script type="text/javascript" src="js/forge/random.js"></script>
+    <script type="text/javascript" src="js/forge/oids.js"></script>
+    <script type="text/javascript" src="js/forge/rsa.js"></script>
+    <script type="text/javascript" src="js/forge/pbe.js"></script>
+    <script type="text/javascript" src="js/forge/x509.js"></script>
+    <script type="text/javascript" src="js/forge/pki.js"></script>
+    <script type="text/javascript" src="js/forge/tls.js"></script>
+    <script type="text/javascript" src="js/forge/cipher.js"></script>
+    <script type="text/javascript" src="js/forge/cipherModes.js"></script>  
+    <script type="text/javascript" src="js/forge/aes.js"></script><!-- attenzione: aes.js deve essere preceduto dai file cipher.js, cipherModes.js -->
+    <script type="text/javascript" src="js/forge/pkcs1.js"></script>
+    <script type="text/javascript" src="js/forge/pkiFromToXml.js"></script>
+
+    <script type="text/javascript" src="js/login.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>    
+</head>
+<!-- 
+	MESSAGES <LI> TEMPLATE  
+	<messages> is an array of object (<message>)
+	
+	<message> is a json object like this
+	{
+		"Id":<message id>,
+		"From":<message from>,
+		"To":<message to>,
+		"Subject":<message subject>,
+		"Date":<message date>,
+		"MsgSize":<message size>,
+		"MsgPriority":<message priority>,
+		"NrAttachments":<message number of attachments>,
+		"MsgLocked":<message is locked>,
+		"HtmlBody":<message html body>,
+		"TextBody":<message text body>,
+		"AttachmentsList":<attachments list
+	}
+-->
+
+<script id="messagesHeaderTemplate" type="text/template">
+	<li data-role="list-divider" data-swatch="a" data-form="ui-bar-a" role="heading" class="ui-li-divider ui-bar-a ui-first-child">Search result - {{TotNumResult}}</li>
+</script>
+<script id="messagesItemTemplate" type="text/template">
+	{{#messages}}
+		<li class="message">
+			<a class="ui-btn-a ui-btn ui-btn-icon-right ui-icon-carat-r" data-form="ui-btn-up-a" data-swatch="a" href="#">
+				<p class="date ui-li-aside ui-li-desc">{{Date | datetime}}</p>
+				<h3 class="ui-li-heading">{{From}}</h3>
+				<p class="ui-li-desc"><strong>{{Subject}}</strong></p>
+				<p class="ui-li-desc">{{TextBody}}</p>			
+			</a>
+		</li>	
+	{{/messages}}
+	<li data-role="list-divider" data-swatch="a" data-form="ui-bar-a" role="heading" class="ui-li-divider ui-bar-a ui-last-child"></li>
+</script>	
+<script id="messageTemplate" type="text/template">
+	<li class="ui-li ui-li-static ui-btn-up-a ui-first-child">
+		<div>Da:<a data-form="ui-link-a" href="mailto:{{From}}" class="ui-link">{{From}}</a></div>
+		<div>A:	<a data-form="ui-link-a" href="mailto:{{To}}" class="ui-link">{{To}}</a></div>
+	</li>
+	<li class="ui-li ui-li-static ui-btn-up-a">
+		<div id="sbj"><strong>{{Subject}}</strong></div>
+		<div>{{Date | datetime}}</div>
+	</li>				
+	<li class="ui-li ui-li-static ui-btn-up-a ui-last-child">
+		<div id="d_message">
+			{{TextBody}}
+		</div>
+	</li>
+</script>	
+<body>
+	<div data-role="page" id="login_page" data-theme="a">
+		<div class="ui-header ui-bar-a" data-swatch="a" data-theme="a" data-form="ui-bar-a" data-role="header" role="banner">
+			<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">ASM - Login</h1>
+		</div>
+		<div data-role="content">
+			<input type="url"  name="url" id="url" value="http://asx-vwg10/asxmob" placeholder="http://">
+			<input type="text" name="un" id="un" value="admin" placeholder="username" class="ui-input-text ui-body-c">
+			<input type="password" data-clear-btn="false" name="pw" id="pw" placeholder="password" value="asm" autocomplete="off" class="ui-input-text ui-body-a">
+			<button id="login_button" data-icon="lock" data-form="ui-btn-up-a" class="ui-btn ui-btn-a ui-icon-lock ui-btn-icon-left ui-shadow ui-corner-all">Login</button>
+			<div class="alert-box error login-error" style="display:none;">Write your error message here.</div>
+		</div>
+	</div>
+
+	<div data-role="page" id="search_page" data-theme="a">
+		<div class="ui-header ui-bar-a" data-swatch="a" data-theme="a" data-form="ui-bar-a" data-role="header" role="banner">
+			<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-home ui-btn-icon-notext ui-shadow" title=" Home " data-form="ui-icon" data-role="button" role="button"> Home </a>
+			<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">ASM - Search</h1>
+		</div>
+		<div data-role="content">
+			<input type="search" name="search_criteria" id="search_criteria" value="">
+			<button id="search_button" data-icon="search" data-form="ui-btn-up-a" class="ui-btn ui-btn-a ui-icon-search ui-btn-icon-left ui-shadow ui-corner-all">Search</button>
+			
+			<ul id="search_result" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow">
+				<!-- message item model whith header and last item
+				<li data-role="list-divider" data-swatch="a" data-form="ui-bar-a" role="heading" class="ui-li-divider ui-bar-a ui-first-child">Search result</li>
+				<li class="message">
+					<a class="ui-btn-a ui-btn ui-btn-icon-right ui-icon-carat-r" data-form="ui-btn-up-a" data-swatch="a" href="#">
+						<p class="date ui-li-aside ui-li-desc">{{Date}}</p>
+						<h3 class="ui-li-heading">{{From}}</h3>
+						<p class="ui-li-desc"><strong>{{Subject}}</p>
+						<p class="ui-li-desc">{{HtmlBody}}{{TextBody}}</p>			
+					</a>
+				</li>		
+				<li data-role="list-divider" data-swatch="a" data-form="ui-bar-a" role="heading" class="ui-li-divider ui-bar-a ui-last-child"></li>
+				-->
+			</ul>
+		</div>
+	</div>	
+	<div data-role="page" id="details_page" data-theme="a">
+		<div class="ui-header ui-bar-a" data-swatch="a" data-theme="a" data-form="ui-bar-a" data-role="header" role="banner">
+			<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-home ui-btn-icon-notext ui-shadow" title=" Home " data-form="ui-icon" data-role="button" role="button"> Home </a>
+			<h1 id="d_subject" class="ui-title" tabindex="0" role="heading" aria-level="1"></h1>
+		</div>
+		<div data-role="content">
+			<ul id="message_detail" data-role="listview" class="ui-listview">
+				<!--
+				<li class="ui-li ui-li-static ui-btn-up-a ui-first-child">
+					<div>Da:	<a data-form="ui-link-a" href="mailto:elena.aralla@gmail.com" class="ui-link">Luca Marcangeli</a></div>
+					<div>A:	<a data-form="ui-link-a" href="mailto:elena.aralla@gmail.com" class="ui-link">Elena Aralla</a></div>
+				</li>
+				<li class="ui-li ui-li-static ui-btn-up-a">
+					<div id="sbj"><strong>Re: PACO: domnde e punto della situazione</strong></div>
+					<div>31 Luglio 2015 18:27</div>
+				</li>				
+				<li class="ui-li ui-li-static ui-btn-up-a ui-last-child">
+				<div id="d_message">
+					Ciao Elena e Stefano,
+					ecco le mie considerazioni (in rosso) relative al processo di PACO.
+					Grazie
+
+					Baci
+
+					luca
+				</div>
+				-->
+				<div><!-- attachments list --></div>
+				</li>
+			</ul>		
+			<button id="back_to_search" data-icon="carat-l" data-form="ui-btn-up-a" class="ui-btn ui-btn-a ui-icon-carat-l ui-btn-icon-left ui-shadow ui-corner-all">Back to search result</button>
+		</div>
+	</div>			
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/jquery.mobile.js"></script>	
+</body>
+</html>

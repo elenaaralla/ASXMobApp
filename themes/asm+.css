@@ -1,0 +1,30 @@
+#search_result
+{
+	display:none;
+	margin-top:"0.3em";
+}
+
+#back_to_search
+{
+	margin-top:"1.5em";
+}
+
+#d_message
+{
+	white-space:"normal";
+}
+
+#sbj
+{
+	white-space:"normal";
+}
+.date
+{
+	margin-right:0;
+}
+
+.ui-li-aside
+{
+	right:"1em";
+	top:"0.3em";
+}
