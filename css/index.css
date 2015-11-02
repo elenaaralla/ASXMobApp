@@ -138,3 +138,11 @@ h1 {
     background:#e3f7fc url('../img/notice.png') no-repeat 10px 50%;
     border:1px solid #8ed9f6;
 }
+
+#savePw {
+    margin-top:0rem;
+}
+
+#savePwLabel {
+    margin-left:2rem;
+}

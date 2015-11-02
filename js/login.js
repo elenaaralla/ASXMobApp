@@ -1,4 +1,4 @@
-function loginBtnHandler()
+function login()
 {
     $(".login-error").html("").hide();
 
@@ -7,13 +7,13 @@ function loginBtnHandler()
         return;
     }
 
-	un  = $("#un").val();
-	pw  = $("#pw").val();
-	asxUrl = $("#url").val();
+	username  = $("#username").val();
+	password  = $("#password").val();
+	host = $("#host").val();
 
 	//richiedo la chiave pubblica
 	var asxpublicKey = "";
-	var publickeysApi = asxUrl + '/api/publickeys?asxcallback=?';
+	var publickeysApi = host + '/api/publickeys?asxcallback=?';
 
 	$.ajax({
 	  url: publickeysApi,
@@ -22,12 +22,11 @@ function loginBtnHandler()
 	  success: function (data, status) {
 		asxpublicKey = "<RSAKeyValue>" + data + "</RSAKeyValue>";
 		console.log( "asxpublicKey = " + asxpublicKey);
-		logInASX(asxpublicKey,asxUrl,un,pw);
+		logInASX(asxpublicKey,host,username,password);
 	  },
 	  error: function (e) {
 	    console.log(e);
 	    errMsg = e.status + "-" + e.statusText;
-	    
         $(".login-error").html(errMsg).show();
 	  }
 	});
@@ -39,15 +38,15 @@ function checkInputData()
 
     var errorMessage = "";
     var emptyFields = [];
-    if($.trim($("#url").val()) == "")
+    if($.trim($("#host").val()) == "")
     {
         emptyFields.push("host name");
     }      
-    if($.trim($("#un").val()) == "")
+    if($.trim($("#username").val()) == "")
     {
         emptyFields.push("username");
     }
-    if($.trim($("#pw").val()) == "")
+    if($.trim($("#password").val()) == "")
     {
         emptyFields.push("password");
     }    
@@ -88,7 +87,7 @@ function checkInputData()
     }
 }
 
-function logInASX(asxpublicKey,asxUrl,un,pw)
+function logInASX(asxpublicKey,host,username,password)
 {
     $(".login-error").html("").hide();
 
@@ -104,31 +103,24 @@ function logInASX(asxpublicKey,asxUrl,un,pw)
     var bodyContent = "";
 
     // CALCULATE SIGNATURE ({signature}: HMACSHA256 di {basestring} usando come chiave {md5(password.ToUpper)} )
-	var absPath = getAbsolutePath(asxUrl + loginApiPath);
+	var absPath = getAbsolutePath(host + loginApiPath);
 
     var basestring = method + "\n" + Timestamp + "\n" +  absPath + "\n" + bodyContent;
 
     console.log("basestring=" + basestring);
 
     var md = forge.md.md5.create();
-    md.update(pw.toUpperCase());
+    md.update(password.toUpperCase());
     var md5pw = md.digest().toHex()
     console.log("hashedpassword=" + md5pw);
 
-    // define key for HMACSHA256
-    var ashKey = forge.util.createBuffer(forge.util.encodeUtf8(md5pw.toUpperCase())).getBytes();
-
-    var hmac = forge.hmac.create();
-    hmac.start('sha256', ashKey);
-    hmac.update(forge.util.createBuffer(forge.util.encodeUtf8(basestring)).getBytes());
-
-    var signature = forge.util.encode64(hmac.digest().getBytes());
+    var signature = encodeSignature(basestring, md5pw);
 
     console.log("signature=" + signature);
 
     // ENCRYPT USER CREDENTIAL ({cryptedUserLogin} = Encrypt RSA di {datatoencrypt} con {“<RSAKeyValue>" + {publicKey} + "</RSAKeyValue>})
 
-    var datatoencrypt = forge.util.encode64(forge.util.encodeUtf8(un)) + ":" + forge.util.encode64(forge.util.encodeUtf8(pw));
+    var datatoencrypt = forge.util.encode64(forge.util.encodeUtf8(username)) + ":" + forge.util.encode64(forge.util.encodeUtf8(password));
 
     console.log( "datatoencrypt:" + datatoencrypt );
 
@@ -150,7 +142,7 @@ function logInASX(asxpublicKey,asxUrl,un,pw)
     var Authentication = cryptedCredentials + ":" + signature;
     console.log("Authentication=" + Authentication);
     
-    var loginApi = asxUrl + loginApiPath + "?asxcallback=?";
+    var loginApi = host + loginApiPath + "?asxcallback=?";
 
     $.ajax({
         url: loginApi,
@@ -162,8 +154,8 @@ function logInASX(asxpublicKey,asxUrl,un,pw)
             console.log(data);
             if(data.IsAuthenticated == true && data.userCanSearch == true)
             {
-                // save user credential
-                saveUserData();
+                // save user profile
+                saveUserData(host,username,cryptedCredentials,md5pw);
                 // go to search page (simple search)
                 $.mobile.changePage("#search_page");
             }
@@ -176,7 +168,33 @@ function logInASX(asxpublicKey,asxUrl,un,pw)
     });
 }
 
-function saveUserData()
+function encodeSignature(basestring, passwordHash)
 {
-    console.log("ATTENZIONE: saveUserData() must be implemented!!!");
+    // define key for HMACSHA256
+    ashKey = forge.util.createBuffer(forge.util.encodeUtf8(passwordHash.toUpperCase())).getBytes();
+
+    hmac = forge.hmac.create();
+    hmac.start('sha256', ashKey);
+    hmac.update(forge.util.createBuffer(forge.util.encodeUtf8(basestring)).getBytes());
+
+    signature = forge.util.encode64(hmac.digest().getBytes());
+
+    console.log("signature=" + signature);
+
+    return signature;
+}
+
+function saveUserData(host,username,cryptedCredential, passwordHash)
+{
+    now = new Date();
+    currentProfile = new Profile(usedProfileName,host,username,cryptedCredential, passwordHash, now);
+    loginProfiles.addProfile(currentProfile);
+}
+
+
+function logout()
+{
+    currentProfile.clearAuthenticationProperty();
+    currentProfile.save();
+    $.mobile.changePage("#login_page");
 }

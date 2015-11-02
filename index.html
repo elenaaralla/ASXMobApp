@@ -40,8 +40,10 @@
     <script type="text/javascript" src="js/forge/aes.js"></script><!-- attenzione: aes.js deve essere preceduto dai file cipher.js, cipherModes.js -->
     <script type="text/javascript" src="js/forge/pkcs1.js"></script>
     <script type="text/javascript" src="js/forge/pkiFromToXml.js"></script>
-
+    <script type="text/javascript" src="js/dateFormat.js"></script>
+	<script type="text/javascript" src="js/userProfile.js"></script>
     <script type="text/javascript" src="js/login.js"></script>
+    <script type="text/javascript" src="js/search.js"></script>
     <script type="text/javascript" src="js/index.js"></script>    
 </head>
 <!-- 
@@ -102,10 +104,13 @@
 			<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">ASM - Login</h1>
 		</div>
 		<div data-role="content">
-			<input type="url"  name="url" id="url" value="http://" placeholder="http://">
-			<input type="text" name="un" id="un" value="" placeholder="username" class="ui-input-text ui-body-c">
-			<input type="password" data-clear-btn="false" name="pw" id="pw" placeholder="password" value="" autocomplete="off" class="ui-input-text ui-body-a">
+			<input type="url" name="host" id="host" value="http://" placeholder="http://">
+			<input type="text" name="username" id="username" value="" placeholder="username" class="ui-input-text ui-body-c">
+			<input type="password" data-clear-btn="false" name="password" id="password" placeholder="password" value="" autocomplete="off" class="ui-input-text ui-body-a">
 			<button id="login_button" data-icon="lock" data-form="ui-btn-up-a" class="ui-btn ui-btn-a ui-icon-lock ui-btn-icon-left ui-shadow ui-corner-all">Login</button>
+
+			<!--<input type="checkbox" name="savePw" id="savePw" /><span id="savePwLabel">Salva la password</span>-->
+
 			<div class="alert-box error login-error" style="display:none;">Write your error message here.</div>
 		</div>
 	</div>
