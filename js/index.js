@@ -56,6 +56,7 @@ function onDeviceReady() {
 
     /* click on login -> call search page */
     $("#login_button").click(function() {
+        $(".login-error").html(":)").show();
         login();
     });
 

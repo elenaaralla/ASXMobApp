@@ -23,6 +23,7 @@ function login()
 		asxpublicKey = "<RSAKeyValue>" + data + "</RSAKeyValue>";
 		debug.log("DEBUG","asxpublicKey = " + asxpublicKey);
 		logInASX(asxpublicKey,host,username,password);
+        $(".login-error").html("publickey received").show();
 	  },
 	  error: function (e) {
 	    debug.log("ERROR",e);
