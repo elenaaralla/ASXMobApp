@@ -110,7 +110,7 @@ LoginProfiles.prototype.addProfile = function(profile)
 
 LoginProfiles.prototype.removeProfile = function(profile)
 {
-	i=-1;
+	profileIndex=-1;
 	profiles = this.getProfiles();
 
 	for (var i = profiles.length - 1; i >= 0; i--) {
@@ -118,16 +118,15 @@ LoginProfiles.prototype.removeProfile = function(profile)
 
 		if(_profile.profileName == profile.profileName)
 		{
-			return i;
+			profileIndex = i;
 			break;
 		}
-	};
-
-	if (i > -1) {
-    	array.splice(i, 1);
 	}
 
-	this.save();
+	if (profileIndex > -1) {
+    	profiles.splice(profileIndex, 1);
+    	this.save();
+	}
 }
 
 LoginProfiles.prototype.saveProfile = function(profile)
@@ -145,7 +144,7 @@ Profile.prototype.save = function()
 
 Profile.prototype.getProperty = function(propertyKey)
 {
-	return this.propertyKey;
+	return this[propertyKey];
 };
 
 Profile.prototype.clearAuthenticationProperty = function()

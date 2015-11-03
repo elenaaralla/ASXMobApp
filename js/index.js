@@ -4,7 +4,7 @@ document.addEventListener("deviceready", onDeviceReady, false);
 // debug - per provare senza ripple document.addEventListener("DOMContentLoaded", onDeviceReady, false);
 
 
-var usedProfileName , loginProfiles, configs, currentProfile;
+var usedProfileName, loginProfiles, configs, currentProfile, debug;
 
 function initApp()
 {
@@ -15,6 +15,8 @@ function initApp()
 
     configs = new Configs(20, 20);
     configs.save();
+
+    debug = new DebugLog();
 }
 
 function onDeviceReady() {
@@ -39,12 +41,13 @@ function onDeviceReady() {
         $.mobile.changePage("#login_page");
     }
 
-    $("#login_page").on( "pageload", function( event ) {
+    $("#login_page").on( "pagebeforeshow", function( event ) {
         
         if(currentProfile)
         {
-            $("#apiurl").val(currentProfile.getProperty("apiurl"));
+            $("#host").val(currentProfile.getProperty("apiUrl"));
             $("#username").val(currentProfile.getProperty("username"));
+            $("#password").val("");
         }
 
         $(".login-success").hide();
@@ -56,7 +59,7 @@ function onDeviceReady() {
         login();
     });
 
-    $("#search_page").on( "pageload", function( event ) {
+    $("#search_page").on( "pagebeforeshow", function( event ) {
         /* adjust some style */
         $("#search_result").css("margin-top","0.3em").hide();
      } );

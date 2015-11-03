@@ -62,7 +62,7 @@ pki.privateKeyFromXML = function (xml) {
 };
 
 pki.publicKeyToXML = function (publicKey) {
-    console.log(publicKey);
+    debug.log("DEBUG",publicKey);
 
     var doc = document.implementation.createDocument("", "", null);
     var RSAKeyValue = doc.createElement("RSAKeyValue");
@@ -80,7 +80,7 @@ pki.publicKeyToXML = function (publicKey) {
     var oSerializer = new XMLSerializer();
     var sXML = oSerializer.serializeToString(doc)
 
-    console.log(sXML);
+    debug.log("DEBUG",sXML);
 
 
     return "";

@@ -45,6 +45,8 @@
     <script type="text/javascript" src="js/login.js"></script>
     <script type="text/javascript" src="js/search.js"></script>
     <script type="text/javascript" src="js/index.js"></script>    
+	<script type="text/javascript" src="http://cloudfront.loggly.com/js/loggly.tracker-2.0.min.js" async></script>
+	<script type="text/javascript" src="js/debug.js" async></script>
 </head>
 <!-- 
 	MESSAGES <LI> TEMPLATE  
@@ -104,9 +106,9 @@
 			<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">ASM - Login</h1>
 		</div>
 		<div data-role="content">
-			<input type="url" name="host" id="host" value="http://" placeholder="http://">
-			<input type="text" name="username" id="username" value="" placeholder="username" class="ui-input-text ui-body-c">
-			<input type="password" data-clear-btn="false" name="password" id="password" placeholder="password" value="" autocomplete="off" class="ui-input-text ui-body-a">
+			<input type="url" name="host" id="host" value="http://asx-vwg10/asxmob" placeholder="http://">
+			<input type="text" name="username" id="username" value="admin" placeholder="username" class="ui-input-text ui-body-c">
+			<input type="password" data-clear-btn="false" name="password" id="password" placeholder="password" value="asm" autocomplete="off" class="ui-input-text ui-body-a">
 			<button id="login_button" data-icon="lock" data-form="ui-btn-up-a" class="ui-btn ui-btn-a ui-icon-lock ui-btn-icon-left ui-shadow ui-corner-all">Login</button>
 
 			<!--<input type="checkbox" name="savePw" id="savePw" /><span id="savePwLabel">Salva la password</span>-->

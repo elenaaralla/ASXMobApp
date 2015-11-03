@@ -21,11 +21,11 @@ function login()
 	  dataType: 'jsonp',
 	  success: function (data, status) {
 		asxpublicKey = "<RSAKeyValue>" + data + "</RSAKeyValue>";
-		console.log( "asxpublicKey = " + asxpublicKey);
+		debug.log("DEBUG","asxpublicKey = " + asxpublicKey);
 		logInASX(asxpublicKey,host,username,password);
 	  },
 	  error: function (e) {
-	    console.log(e);
+	    debug.log("ERROR",e);
 	    errMsg = e.status + "-" + e.statusText;
         $(".login-error").html(errMsg).show();
 	  }
@@ -96,7 +96,7 @@ function logInASX(asxpublicKey,host,username,password)
     //ASX accepted date format "YYYY-MM-dd HH:mm:ssZ")
     var Timestamp = ((d.toISOString()).replace("T", " ")).split(".")[0] + "Z";
 
-    console.log( "Timestamp = " + Timestamp);
+    debug.log("DEBUG","Timestamp = " + Timestamp);
 
     var method = "GET";
     var loginApiPath = "/api/logins";
@@ -107,22 +107,22 @@ function logInASX(asxpublicKey,host,username,password)
 
     var basestring = method + "\n" + Timestamp + "\n" +  absPath + "\n" + bodyContent;
 
-    console.log("basestring=" + basestring);
+    debug.log("DEBUG","basestring=" + basestring);
 
     var md = forge.md.md5.create();
     md.update(password.toUpperCase());
     var md5pw = md.digest().toHex()
-    console.log("hashedpassword=" + md5pw);
+    debug.log("DEBUG","hashedpassword=" + md5pw);
 
     var signature = encodeSignature(basestring, md5pw);
 
-    console.log("signature=" + signature);
+    debug.log("DEBUG","signature=" + signature);
 
     // ENCRYPT USER CREDENTIAL ({cryptedUserLogin} = Encrypt RSA di {datatoencrypt} con {“<RSAKeyValue>" + {publicKey} + "</RSAKeyValue>})
 
     var datatoencrypt = forge.util.encode64(forge.util.encodeUtf8(username)) + ":" + forge.util.encode64(forge.util.encodeUtf8(password));
 
-    console.log( "datatoencrypt:" + datatoencrypt );
+    debug.log("DEBUG","datatoencrypt:" + datatoencrypt );
 
     // create forge publickey
     var pubKey = pki.publicKeyFromXML(asxpublicKey);
@@ -136,11 +136,11 @@ function logInASX(asxpublicKey,host,username,password)
 
     var cryptedCredentials = forge.util.encode64(cryptedBuffer.getBytes());
 
-    console.log("cryptedCredentials=" + cryptedCredentials);
+    debug.log("DEBUG","cryptedCredentials=" + cryptedCredentials);
 
     //Authentication:  {cryptedUserLogin}:{signature}
     var Authentication = cryptedCredentials + ":" + signature;
-    console.log("Authentication=" + Authentication);
+    debug.log("DEBUG","Authentication=" + Authentication);
     
     var loginApi = host + loginApiPath + "?asxcallback=?";
 
@@ -151,7 +151,7 @@ function logInASX(asxpublicKey,host,username,password)
         crossDomain:false,
         dataType: 'jsonp',
         success: function (data) {
-            console.log(data);
+            debug.log("DEBUG",data);
             if(data.IsAuthenticated == true && data.userCanSearch == true)
             {
                 // save user profile
@@ -161,7 +161,7 @@ function logInASX(asxpublicKey,host,username,password)
             }
         },
         error: function (e) {
-            console.log(e);
+            debug.log("ERROR",e);
             errMsg = e.status + "-" + e.statusText;
             $(".login-error").html(errMsg).show();
         }
@@ -179,7 +179,7 @@ function encodeSignature(basestring, passwordHash)
 
     signature = forge.util.encode64(hmac.digest().getBytes());
 
-    console.log("signature=" + signature);
+    debug.log("DEBUG","signature=" + signature);
 
     return signature;
 }

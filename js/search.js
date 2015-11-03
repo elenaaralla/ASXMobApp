@@ -1,11 +1,28 @@
 function SearchModel(id,name,lastUsed,result,userId,instance)
 {
-    this.id = id;
-    this.name = name;
-    this.lastUsed = lastUsed;
-    this.result = result;
-    this.userId = userId;
-    this.instance = instance; 
+    this.Id = id;
+    this.Name = name;
+    this.LastUsed = lastUsed;
+    this.Result = result;
+    this.Remove = 1;
+    this.From = null;
+    this.FromOperator = 1;
+    this.To = null;
+    this.ToOperator = 1;
+    this.Subject = null;
+    this.SubjectOperator  = 1;
+    this.Body = null;
+    this.DateFrom = null;
+    this.DateTo = null;
+    this.LastNDays = null;
+    this.MsgWithAttach = 0;
+    this.MsgAsSpam = -1;
+    this.AttachName = null;
+    this.AttachSize = null;
+    this.UseFromAsTo = null;
+    this.UsrIsExternal = null;
+    this.UserId = userId;
+    this.Instance = instance; 
 }
 
 /* click on search button -> display search result 
@@ -42,11 +59,10 @@ function search()
     //ASX accepted date format "YYYY-MM-dd HH:mm:ssZ")
     Timestamp = ((now.toISOString()).replace("T", " ")).split(".")[0] + "Z";
     
-    search = JSON.stringify(new SearchModel(0,"New mobile search",new Date(), ($.guid++)));
+    bodyContent = JSON.stringify(new SearchModel(0,"Newmobilesearch",new Date(), ($.guid++)));
 
     method = "POST";
-    searchApiPath = "/api/api/searches";
-    bodyContent = search;    
+    searchApiPath = "/api/searches";   
 
     host = currentProfile.getProperty("apiUrl");
 
@@ -54,26 +70,33 @@ function search()
 
     basestring = method + "\n" + Timestamp + "\n" +  absPath + "\n" + bodyContent;
 
+    debug.log("DEBUG", basestring);
+
+    md5pw = currentProfile.getProperty("passwordHash");
+
     signature = encodeSignature(basestring, md5pw);
 
-    cryptedCredentials = currentProfile.getProperty("cryptedCredentials");
+    debug.log("DEBUG", signature);
 
-    Authentication = cryptedCredentials + ":" + signature;
+    cryptedCredential = currentProfile.getProperty("cryptedCredential");
 
-    searchApi = host + loginApiPath + "?asxcallback=?";
+    Authentication = cryptedCredential + ":" + signature;
+
+    searchApi = host + searchApiPath + "?asxcallback=?";
 
  $.ajax({
         url: searchApi,
         type: method,
-        headers: {'Timestamp':Timestamp, 'Authentication':Authentication},
-        data:{"search": search},
-        crossDomain:false,
+        headers: {'Timestamp':Timestamp, 'Authentication':Authentication, 'Content-Type': 'application/json; charset=utf-8'},
+        data: bodyContent,
+        processData: false,
+        crossDomain: false,
         dataType: 'jsonp',
         success: function (data) {
-            console.log(data);
+            debug.log("DEBUG",data);
         },
         error: function (e) {
-            console.log(e);
+            debug.log("ERROR",e);
             errMsg = e.status + "-" + e.statusText;
             $(".login-error").html(errMsg).show();
         }
