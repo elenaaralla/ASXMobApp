@@ -211,18 +211,6 @@ GetMessageDetail = function(msg_key)
             /* click on "back to search" -> return to seach page */
             $("#back_to_search").on("tap", backToSearch);
             $("#message_detail").on("swiperight", backToSearch);
-
-            $("#search_page").on( "pageshow", function( event ) {
-                /* adjust some style */
-                $("#search_result").css("margin-top","0.3em");
-
-                if($(".msg_selected").offset())
-                {
-                    $.mobile.silentScroll($(".msg_selected").offset().top);
-                }
-
-                $(".message").removeClass("msg_selected");
-             } );
         },
         error: function (request,error) {
             alert('Network error has occurred please try again!');
@@ -233,4 +221,13 @@ GetMessageDetail = function(msg_key)
 function backToSearch(e)
 {
     $( ":mobile-pagecontainer" ).pagecontainer( "change", "#search_page", { transition : "none" } );
+
+    $("#search_result").css("margin-top","0.3em");
+
+    if($(".msg_selected").offset())
+    {
+        $.mobile.silentScroll($(".msg_selected").offset().top);
+    }
+
+    $(".message").removeClass("msg_selected");
 }
