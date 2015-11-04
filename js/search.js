@@ -1,9 +1,9 @@
-function SearchModel(id,name,lastUsed,result,userId,instance)
+function SearchModel(id,name,lastUsed,instance)
 {
     this.Id = id;
     this.Name = name;
     this.LastUsed = lastUsed;
-    this.Result = result;
+    this.Result = 0;
     this.Remove = 1;
     this.From = null;
     this.FromOperator = 1;
@@ -21,7 +21,7 @@ function SearchModel(id,name,lastUsed,result,userId,instance)
     this.AttachSize = null;
     this.UseFromAsTo = null;
     this.UsrIsExternal = null;
-    this.UserId = userId;
+    this.UserId = 0;
     this.Instance = instance; 
 }
 
@@ -52,48 +52,40 @@ function SearchModel(id,name,lastUsed,result,userId,instance)
     }
 */
 
+var Authentication = function(basestring)
+{
+    cryptedCredentials =  currentProfile.getProperty("cryptedCredential");
+    passwordHash = currentProfile.getProperty("passwordHash");
+
+    //Authentication:  {cryptedUserLogin}:{signature}
+    return cryptedCredentials + ":" + Signature(basestring, passwordHash);
+}
+
 function search()
 {
-    // init data 
-    now = new Date();
-    //ASX accepted date format "YYYY-MM-dd HH:mm:ssZ")
-    Timestamp = ((now.toISOString()).replace("T", " ")).split(".")[0] + "Z";
-    
-    bodyContent = JSON.stringify(new SearchModel(0,"Newmobilesearch",new Date(), ($.guid++)));
-
     method = "POST";
     searchApiPath = "/api/searches";   
+    bodyContent = JSON.stringify(new SearchModel(0,"New mobile search",new Date(),guid()));
 
+    timestamp = Timestamp();
     host = currentProfile.getProperty("apiUrl");
+    basestring = BaseString(host, method, timestamp, searchApiPath, bodyContent);
 
-    absPath = getAbsolutePath(host + searchApiPath);
-
-    basestring = method + "\n" + Timestamp + "\n" +  absPath + "\n" + bodyContent;
-
-    debug.log("DEBUG", basestring);
-
-    md5pw = currentProfile.getProperty("passwordHash");
-
-    signature = encodeSignature(basestring, md5pw);
-
-    debug.log("DEBUG", signature);
-
-    cryptedCredential = currentProfile.getProperty("cryptedCredential");
-
-    Authentication = cryptedCredential + ":" + signature;
+    authentication = Authentication(basestring);
 
     searchApi = host + searchApiPath + "?asxcallback=?";
 
- $.ajax({
+    $.ajax({
         url: searchApi,
         type: method,
-        headers: {'Timestamp':Timestamp, 'Authentication':Authentication, 'Content-Type': 'application/json; charset=utf-8'},
+        headers: {'Timestamp':timestamp, 'Authentication':authentication, 'Content-Type': 'application/json; charset=utf-8'},
         data: bodyContent,
         processData: false,
         crossDomain: false,
         dataType: 'jsonp',
         success: function (data) {
             debug.log("DEBUG",data);
+            getSearchMessages(data.Id);
         },
         error: function (e) {
             debug.log("ERROR",e);
@@ -101,11 +93,36 @@ function search()
             $(".login-error").html(errMsg).show();
         }
     });
+}
 
-/*
-    $.ajax({url: "./messages_data.js",
-        dataType: "json",
-        async: true,
+function getSearchMessages(src_key)
+{
+    numResultXPage = configs.getProperty("resultsNumber");
+
+    pagerange = "1-" + numResultXPage;
+
+    method = "GET";
+    searchApiPath = "/api/searches/" + src_key + "/messages";   
+    bodyContent = "";
+
+    host = currentProfile.getProperty("apiUrl");
+    timestamp = Timestamp();
+
+    basestring = BaseString(host, method, timestamp, searchApiPath, bodyContent);
+
+    //Authentication:  {cryptedUserLogin}:{signature}
+    authentication = Authentication(basestring);
+
+    searchApi = host + searchApiPath + "?asxcallback=?"
+
+    $.ajax({
+        url: searchApi,
+        type: method,
+        headers: {'Timestamp':timestamp, 'Authentication':authentication},
+        data: {"page_range":pagerange, "sort_column": "colDate", "sort_type":"1"},
+        processData: true,        
+        crossDomain: false,
+        dataType: 'jsonp',
         success: function (data) { 
             // load messages header template
             var h_template = $('#messagesHeaderTemplate').html();
@@ -126,17 +143,94 @@ function search()
             $(".ui-li-aside").css("right","1em").css("top","0.3em");                
             
             // setup click event on <li> (message) item; click on result list -> call details page 
-            $(".message").click(function() {
+            $(".message").on("tap",vieMessageDetail);
+            $(".message").on("swipeleft",vieMessageDetail);
+        },
+        error: function (e) {
+            debug.log("ERROR",e);
+            errMsg = e.status + "-" + e.statusText;
+            $(".login-error").html(errMsg).show();
+        }
+    });     
+}
+
+
+function vieMessageDetail()
+{
+    $(this).addClass("msg_selected");
+    // get message detail via ajax
+    GetMessageDetail(this.id);
+}
+
+/* get message data via ajax */
+GetMessageDetail = function(msg_key)
+{
+    method = "GET";
+    apiPath = "/api/messages/" + msg_key;   
+    bodyContent = "";
+
+    host = currentProfile.getProperty("apiUrl");
+    timestamp = Timestamp();
+
+    basestring = BaseString(host, method, timestamp, apiPath, bodyContent);
+
+    //Authentication:  {cryptedUserLogin}:{signature}
+    authentication = Authentication(basestring);
+
+    messageApi = host + apiPath + "?asxcallback=?"
+
+    $.ajax({
+        url: messageApi,
+        type: method,
+        headers: {'Timestamp':timestamp, 'Authentication':authentication},
+        data: {"page_range":pagerange, "sort_column": "colDate", "sort_type":"1"},
+        processData: true,        
+        crossDomain: false,
+        dataType: 'jsonp',
+        success: function (data) { 
+            /* load message template */
+            var d_template = $('#messageTemplate').html();
+            /* bind data to template */
+            var msg = Mustache.to_html(d_template, data);       
             
-                // get message detail via ajax
-                GetMeddageDetail();
-                // show detail page
-                $.mobile.changePage("#details_page");
-                $("#d_subject").html($("#s_subject").html());
-            }); 
+            /* load data into ul... */
+            $('#message_detail').html(msg);
+            
+            /* make styles adjustment */
+            $("#back_to_search").css("margin-top","1.5em");
+            $("#d_message").css("white-space","normal");
+            $("#sbj").css("white-space","normal");      
+            
+            // show detail page
+            //$.mobile.changePage("#details_page");
+            $( ":mobile-pagecontainer" ).pagecontainer( "change", "#details_page", { transition : "none" } );
+            $("#d_subject").html($("#s_subject").html());
+            /* adjust some style */
+            $("#search_result").css("margin-top","0.3em");
+
+            /* click on "back to search" -> return to seach page */
+            $("#back_to_search").on("tap", backToSearch);
+            $("#message_detail").on("swiperight", backToSearch);
+
+            $("#search_page").on( "pageshow", function( event ) {
+                /* adjust some style */
+                $("#search_result").css("margin-top","0.3em");
+
+                if($(".msg_selected").offset())
+                {
+                    $.mobile.silentScroll($(".msg_selected").offset().top);
+                }
+
+                $(".message").removeClass("msg_selected");
+             } );
         },
         error: function (request,error) {
             alert('Network error has occurred please try again!');
         }
-    });     */
+    });
+}
+
+function backToSearch(e)
+{
+    $( ":mobile-pagecontainer" ).pagecontainer( "change", "#search_page", { transition : "none" } );
 }

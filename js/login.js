@@ -23,7 +23,6 @@ function login()
 		asxpublicKey = "<RSAKeyValue>" + data + "</RSAKeyValue>";
 		debug.log("DEBUG","asxpublicKey = " + asxpublicKey);
 		logInASX(asxpublicKey,host,username,password);
-        $(".login-error").html("publickey received").show();
 	  },
 	  error: function (e) {
 	    debug.log("ERROR",e);
@@ -88,37 +87,58 @@ function checkInputData()
     }
 }
 
-function logInASX(asxpublicKey,host,username,password)
+var Timestamp = function()
 {
-    $(".login-error").html("").hide();
-
-	// init data 
-    var d = new Date();
+    // init data 
+    now = new Date();
     //ASX accepted date format "YYYY-MM-dd HH:mm:ssZ")
-    var Timestamp = ((d.toISOString()).replace("T", " ")).split(".")[0] + "Z";
+    timestamp = ((now.toISOString()).replace("T", " ")).split(".")[0] + "Z";
 
-    debug.log("DEBUG","Timestamp = " + Timestamp);
+    debug.log("DEBUG","Timestamp = " + timestamp);
 
-    var method = "GET";
-    var loginApiPath = "/api/logins";
-    var bodyContent = "";
+    return timestamp;
+}
 
-    // CALCULATE SIGNATURE ({signature}: HMACSHA256 di {basestring} usando come chiave {md5(password.ToUpper)} )
-	var absPath = getAbsolutePath(host + loginApiPath);
-
-    var basestring = method + "\n" + Timestamp + "\n" +  absPath + "\n" + bodyContent;
-
-    debug.log("DEBUG","basestring=" + basestring);
-
+var PasswordHash = function(password)
+{
     var md = forge.md.md5.create();
     md.update(password.toUpperCase());
     var md5pw = md.digest().toHex()
     debug.log("DEBUG","hashedpassword=" + md5pw);
 
-    var signature = encodeSignature(basestring, md5pw);
+    return md5pw;
+}
+
+var BaseString = function (host, method, timestamp, apiPath, bodyContent)
+{
+    absPath = getAbsolutePath(host + apiPath);
+
+    basestring = method + "\n" + timestamp + "\n" +  absPath + "\n" + bodyContent;
+
+    debug.log("DEBUG","basestring=" + basestring);
+
+    return basestring;
+}
+
+function Signature(basestring, passwordHash)
+{
+     // CALCULATE SIGNATURE ({signature}: HMACSHA256 di {basestring} usando come chiave {md5(password.ToUpper)} )
+    // define key for HMACSHA256
+    ashKey = forge.util.createBuffer(forge.util.encodeUtf8(passwordHash.toUpperCase())).getBytes();
+
+    hmac = forge.hmac.create();
+    hmac.start('sha256', ashKey);
+    hmac.update(forge.util.createBuffer(forge.util.encodeUtf8(basestring)).getBytes());
+
+    signature = forge.util.encode64(hmac.digest().getBytes());
 
     debug.log("DEBUG","signature=" + signature);
 
+    return signature;
+}
+
+var CryptedCredentials = function(asxpublicKey, username, password)
+{
     // ENCRYPT USER CREDENTIAL ({cryptedUserLogin} = Encrypt RSA di {datatoencrypt} con {“<RSAKeyValue>" + {publicKey} + "</RSAKeyValue>})
 
     var datatoencrypt = forge.util.encode64(forge.util.encodeUtf8(username)) + ":" + forge.util.encode64(forge.util.encodeUtf8(password));
@@ -135,20 +155,37 @@ function logInASX(asxpublicKey,host,username,password)
 
     var cryptedBuffer = forge.util.createBuffer(crypted);
 
-    var cryptedCredentials = forge.util.encode64(cryptedBuffer.getBytes());
+    cryptedCredentials = forge.util.encode64(cryptedBuffer.getBytes());
 
     debug.log("DEBUG","cryptedCredentials=" + cryptedCredentials);
 
+    return cryptedCredentials;
+}
+
+function logInASX(asxpublicKey,host,username,password)
+{
+    $(".login-error").html("").hide();
+
+    method = "GET";
+    loginApiPath = "/api/logins";
+    bodyContent = "";
+
+    timestamp = Timestamp();
+    cryptedCredentials = CryptedCredentials(asxpublicKey, username, password);
+    passwordHash = PasswordHash(password);
+    basestring = BaseString(host, method, timestamp, loginApiPath, bodyContent);
+
     //Authentication:  {cryptedUserLogin}:{signature}
-    var Authentication = cryptedCredentials + ":" + signature;
-    debug.log("DEBUG","Authentication=" + Authentication);
-    
+    authentication = cryptedCredentials + ":" + Signature(basestring, passwordHash);
+
+    debug.log("DEBUG","Authentication=" + authentication);
+
     var loginApi = host + loginApiPath + "?asxcallback=?";
 
     $.ajax({
         url: loginApi,
-        type: 'GET',
-        headers: {'Timestamp':Timestamp, 'Authentication':Authentication},
+        type: method,
+        headers: {'Timestamp':timestamp, 'Authentication':authentication},
         crossDomain:false,
         dataType: 'jsonp',
         success: function (data) {
@@ -156,9 +193,10 @@ function logInASX(asxpublicKey,host,username,password)
             if(data.IsAuthenticated == true && data.userCanSearch == true)
             {
                 // save user profile
-                saveUserData(host,username,cryptedCredentials,md5pw);
+                saveUserData(host,username,cryptedCredentials,passwordHash);
                 // go to search page (simple search)
-                $.mobile.changePage("#search_page");
+                //$.mobile.changePage("#search_page");
+                $( ":mobile-pagecontainer" ).pagecontainer( "change", "#search_page", { transition : "none" } );
             }
         },
         error: function (e) {
@@ -169,22 +207,6 @@ function logInASX(asxpublicKey,host,username,password)
     });
 }
 
-function encodeSignature(basestring, passwordHash)
-{
-    // define key for HMACSHA256
-    ashKey = forge.util.createBuffer(forge.util.encodeUtf8(passwordHash.toUpperCase())).getBytes();
-
-    hmac = forge.hmac.create();
-    hmac.start('sha256', ashKey);
-    hmac.update(forge.util.createBuffer(forge.util.encodeUtf8(basestring)).getBytes());
-
-    signature = forge.util.encode64(hmac.digest().getBytes());
-
-    debug.log("DEBUG","signature=" + signature);
-
-    return signature;
-}
-
 function saveUserData(host,username,cryptedCredential, passwordHash)
 {
     now = new Date();
@@ -192,10 +214,10 @@ function saveUserData(host,username,cryptedCredential, passwordHash)
     loginProfiles.addProfile(currentProfile);
 }
 
-
 function logout()
 {
     currentProfile.clearAuthenticationProperty();
     currentProfile.save();
-    $.mobile.changePage("#login_page");
+    //$.mobile.changePage("#login_page");
+    $( ":mobile-pagecontainer" ).pagecontainer( "change", "#login_page", { transition : "none" } );
 }

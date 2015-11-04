@@ -20,9 +20,6 @@ function initApp()
 }
 
 function onDeviceReady() {
-
-    $.guid = 0;
-
     initApp();
 
     //nelle prossime versioni sarà un elemnto di una lista di profili
@@ -34,11 +31,13 @@ function onDeviceReady() {
         && checkTimeout(currentProfile.getProperty("lastUseDate"), configs.getProperty("timeout")) 
         )
     {
-        $.mobile.changePage("#search_page");
+        //$.mobile.changePage("#search_page");
+        $( ":mobile-pagecontainer" ).pagecontainer( "change", "#search_page", { transition : "none" } );
     }
     else
     {
-        $.mobile.changePage("#login_page");
+        //$.mobile.changePage("#login_page");
+        $( ":mobile-pagecontainer" ).pagecontainer( "change", "#login_page", { transition : "none" } );
     }
 
     $("#login_page").on( "pagebeforeshow", function( event ) {
@@ -55,25 +54,13 @@ function onDeviceReady() {
      } );
 
     /* click on login -> call search page */
-    $("#login_button").click(function() {
-        $(".login-error").html(":)").show();
-        login();
-    });
-
-    $("#search_page").on( "pagebeforeshow", function( event ) {
-        /* adjust some style */
-        $("#search_result").css("margin-top","0.3em").hide();
-     } );
+    $('#login_button').on('tap', login);
 
     /* get messages data via ajax */
-    $("#search_button").click(function() {
-        search();        
-    }); 
+    $("#search_button").on('tap', search);
 
     /* click on home icon (up-left) -> logout */
-    $(".ui-icon-home").click(function() {
-        logout();
-    });    
+    $(".ui-icon-home").on('tap', logout);
 }
 
 function checkTimeout(lastUseDate, timeout)
@@ -95,37 +82,6 @@ function checkTimeout(lastUseDate, timeout)
     return true;
 }
 
-/* get message data via ajax */
-GetMessageDetail = function()
-{
-    $.ajax({url: "./message_data.js",
-        dataType: "json",
-        async: true,
-        success: function (data) { 
-            /* load message template */
-            var d_template = $('#messageTemplate').html();
-            /* bind data to template */
-            var msg = Mustache.to_html(d_template, data);       
-            
-            /* load data into ul... */
-            $('#message_detail').html(msg);
-            
-            /* make styles adjustment */
-            $("#back_to_search").css("margin-top","1.5em");
-            $("#d_message").css("white-space","normal");
-            $("#sbj").css("white-space","normal");      
-            
-            /* click on "back to search" -> return to seach page */
-            $("#back_to_search").click(function() {
-                $.mobile.changePage("#search_page");
-            });  
-        },
-        error: function (request,error) {
-            alert('Network error has occurred please try again!');
-        }
-    });
-}
-
 var getAbsolutePath = function(href) {
     var l = document.createElement("a");
     l.href = href;
@@ -134,4 +90,12 @@ var getAbsolutePath = function(href) {
 
 var isUrlValid = function(url) {
     return /^(https?|s?ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i.test(url);
+}
+
+var guid = function () {
+    function _p8(s) {
+        var p = (Math.random().toString(16)+"000000000").substr(2,8);
+        return s ? p.substr(0,4) + p.substr(4,4) : p ;
+    }
+    return _p8() + _p8(true) + _p8(true) + _p8();
 }

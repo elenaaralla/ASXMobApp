@@ -32,7 +32,7 @@ Configs.prototype.get = function()
 
 Configs.prototype.getProperty = function(propertyKey)
 {
-	return this.propertyKey;
+	return this[propertyKey];
 };
 
 LoginProfiles.prototype.get = function()

@@ -146,3 +146,11 @@ h1 {
 #savePwLabel {
     margin-left:2rem;
 }
+
+.attach
+{
+
+}
+.ui-icon-paperclip:after {
+    background-image: url("../themes/images/paperclip.png");
+}
