@@ -221,13 +221,4 @@ GetMessageDetail = function(msg_key)
 function backToSearch(e)
 {
     $( ":mobile-pagecontainer" ).pagecontainer( "change", "#search_page", { transition : "none" } );
-
-    $("#search_result").css("margin-top","0.3em");
-
-    if($(".msg_selected").offset())
-    {
-        $.mobile.silentScroll($(".msg_selected").offset().top);
-    }
-
-    $(".message").removeClass("msg_selected");
 }

@@ -58,6 +58,7 @@ function onDeviceReady() {
         $("#search_result").css("margin-top","0.3em");
      } );    
 
+/*
     $("#search_page").on( "pageshow", function( event ) {
         if($(".msg_selected").offset())
         {
@@ -68,7 +69,7 @@ function onDeviceReady() {
     $("#search_page").on( "pageaftershow", function( event ) {
         $(".message").removeClass("msg_selected");
      } );  
-
+*/
 
     /* click on login -> call search page */
     $('#login_button').on('tap', login);
