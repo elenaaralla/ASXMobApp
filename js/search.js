@@ -137,6 +137,7 @@ function getSearchMessages(src_key)
             // load data into ul...
             $('#search_result').html(header + items);
             // and show them 
+            $("#search_result").css("margin-top","0.3em");
             $('#search_result').show();
             
             $(".date").css("margin-right","0");
@@ -204,9 +205,8 @@ GetMessageDetail = function(msg_key)
             // show detail page
             //$.mobile.changePage("#details_page");
             $( ":mobile-pagecontainer" ).pagecontainer( "change", "#details_page", { transition : "none" } );
+            
             $("#d_subject").html($("#s_subject").html());
-            /* adjust some style */
-            $("#search_result").css("margin-top","0.3em");
 
             /* click on "back to search" -> return to seach page */
             $("#back_to_search").on("tap", backToSearch);

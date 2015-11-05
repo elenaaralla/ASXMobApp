@@ -10,8 +10,11 @@ function initApp()
 {
     usedProfileName = "asx";
 
-    loginProfiles = new LoginProfiles();
-    loginProfiles.save();
+    if(!loginProfiles)
+    {
+        loginProfiles = new LoginProfiles();
+        loginProfiles.save();
+    }
 
     configs = new Configs(20, 20);
     configs.save();
@@ -20,6 +23,7 @@ function initApp()
 }
 
 function onDeviceReady() {
+    
     initApp();
 
     //nelle prossime versioni sarà un elemnto di una lista di profili
@@ -54,22 +58,16 @@ function onDeviceReady() {
      } );
 
 
-    $("#search_page").on( "pagebeforeshow", function( event ) {
-        $("#search_result").css("margin-top","0.3em");
-     } );    
-
-/*
     $("#search_page").on( "pageshow", function( event ) {
+        
         if($(".msg_selected").offset())
         {
-            $.mobile.silentScroll($(".msg_selected").offset().top);
+            scrollto = $(".msg_selected").offset().top;
+            $.mobile.silentScroll(scrollto);
+            $(".msg_selected").removeClass("msg_selected");
         }
-     } );    
 
-    $("#search_page").on( "pageaftershow", function( event ) {
-        $(".message").removeClass("msg_selected");
-     } );  
-*/
+     } );    
 
     /* click on login -> call search page */
     $('#login_button').on('tap', login);

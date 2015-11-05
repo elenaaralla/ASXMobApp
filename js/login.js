@@ -19,14 +19,25 @@ function login()
 	  url: publickeysApi,
 	  type: 'GET',
 	  dataType: 'jsonp',
+      timeout: 3000,
 	  success: function (data, status) {
 		asxpublicKey = "<RSAKeyValue>" + data + "</RSAKeyValue>";
 		debug.log("DEBUG","asxpublicKey = " + asxpublicKey);
 		logInASX(asxpublicKey,host,username,password);
 	  },
 	  error: function (e) {
-	    debug.log("ERROR",e);
-	    errMsg = e.status + "-" + e.statusText;
+
+        debug.log("ERROR",e);
+
+        if(e.status == 0)
+        {
+            errMsg = "Server non raggiungibile; verificare che l'url <strong>" + host + "</strong> specificato sia corretto e lo stato del server.";
+        }
+        else
+        {
+            errMsg = e.status + "-" + e.statusText;
+        }
+
         $(".login-error").html(errMsg).show();
 	  }
 	});

@@ -77,9 +77,6 @@
 	{{#messages}}
 		<li class="message" id="{{Id}}">
 			<a class="ui-btn-a ui-btn ui-btn-icon-right ui-icon-carat-r" data-form="ui-btn-up-a" data-swatch="a" href="#">
-				<!--
-					//<div class="attach ui-btn-a ui-btn ui-btn-icon-left ui-icon-paperclip" data-icon="paperclip">{{NrAttachments}}</div>
-				//-->
 				<p class="date ui-li-aside ui-li-desc">{{Date | datetime}}</p>
 				<h3 class="ui-li-heading">{{From}}</h3>
 				<p class="ui-li-desc"><strong>{{Subject}}</strong></p>
@@ -110,9 +107,9 @@
 			<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">ASM - Login</h1>
 		</div>
 		<div data-role="content">
-			<input type="url" name="host" id="host" value="http://" placeholder="http://">
-			<input type="text" name="username" id="username" value="" placeholder="username" class="ui-input-text ui-body-c">
-			<input type="password" data-clear-btn="false" name="password" id="password" placeholder="password" value="" autocomplete="off" class="ui-input-text ui-body-a">
+			<input type="url" name="host" id="host" value="http://asx-vwg10" placeholder="http://">
+			<input type="text" name="username" id="username" value="admin" placeholder="username" class="ui-input-text ui-body-c">
+			<input type="password" data-clear-btn="false" name="password" id="password" placeholder="password" value="asm" autocomplete="off" class="ui-input-text ui-body-a">
 			<button id="login_button" data-icon="lock" data-form="ui-btn-up-a" class="ui-btn ui-btn-a ui-icon-lock ui-btn-icon-left ui-shadow ui-corner-all">Login</button>
 
 			<!--<input type="checkbox" name="savePw" id="savePw" /><span id="savePwLabel">Salva la password</span>-->
