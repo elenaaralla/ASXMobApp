@@ -352,8 +352,6 @@ function dnlAndOpenAttach(e)
     authentication = Authentication(basestring);
 
     attachApi = host + apiPath
-    
-    document.location.href =  host + apiPath;
 
     try
     {
