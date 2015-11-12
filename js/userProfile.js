@@ -35,6 +35,13 @@ Configs.prototype.getProperty = function(propertyKey)
 	return this[propertyKey];
 };
 
+Configs.prototype.setProperty = function(propertyKey, propertyVal)
+{
+	this[propertyKey] = propertyVal;
+	this.save();
+	return this[propertyKey];
+};
+
 LoginProfiles.prototype.get = function()
 {
 	this.profiles = JSON.parse(window.localStorage.getItem(this.name));

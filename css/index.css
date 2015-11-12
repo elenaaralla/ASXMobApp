@@ -147,10 +147,96 @@ h1 {
     margin-left:2rem;
 }
 
-.attach
-{
-
+/* class applied to div that will contain paperclip (only messages with attachments) */
+.attach {
+    margin-right:10px;
+    height: 15px;
+    width:14px;
+    border: 0;
 }
-.ui-icon-paperclip:after {
-    background-image: url("../themes/images/paperclip.png");
+
+.paperclip {
+    background-image: url("../themes/images/icons-png/paperclip.png");
+}
+
+.paging{
+    text-align: center;
+    padding:0.2rem;
+}
+
+#search_header{
+    padding:0;
+}
+
+#search_btn {
+    margin-right:0;
+    margin-left:0;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 4px;
+}
+
+#custom_btn {
+    border-radius: 4px;
+}
+
+.search_result{
+    font-weight:bold;
+    width: 40%;
+    white-space: normal;
+    text-align: center;
+}
+
+.logo
+{
+    background-image: url("../themes/images/logo.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 98%;
+}
+
+.custom-border-radius {
+    -webkit-border-radius: .3125em;
+    border-radius: .3125em;
+}
+
+div#menu
+{
+    background-color: #3388cc;
+    z-index:1; 
+    position:absolute; 
+    top:0px; 
+    left:0px; 
+    width:100%; 
+    height:100%; 
+    display:none;    
+}
+
+div#menu ul 
+{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+div#menu ul li label {
+    display: block;
+    padding: 0.9375rem 0.625rem 0.3125rem 0.9375rem;
+    color: #ECECEC;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: transparent;
+    border-top: none;
+    border-bottom: none;
+    margin: 0;
+}
+
+div#menu ul li a {
+    display: block;
+    padding: 0.625rem 0.625rem 0.625rem 0.9375rem;
+    color: white;
+    border-bottom: none;
+    transition: background 300ms ease;
+    font-size: 0.875rem;
 }

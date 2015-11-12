@@ -1,10 +1,11 @@
 // Device Event Listener
 document.addEventListener("deviceready", onDeviceReady, false);
 
-// debug - per provare senza ripple document.addEventListener("DOMContentLoaded", onDeviceReady, false);
+// debug - per provare senza ripple 
+document.addEventListener("DOMContentLoaded", onDeviceReady, false);
 
 
-var usedProfileName, loginProfiles, configs, currentProfile, debug;
+var usedProfileName, loginProfiles, configs, currentProfile, debug, cpage, totResult;
 
 function initApp()
 {
@@ -16,7 +17,7 @@ function initApp()
         loginProfiles.save();
     }
 
-    configs = new Configs(20, 20);
+    configs = new Configs(20, 20, 1);
     configs.save();
 
     debug = new DebugLog();
@@ -69,14 +70,38 @@ function onDeviceReady() {
 
      } );    
 
+
+    $("#details_page").on( "pageshow", function( event ) {
+        
+        if($("#html_message").html() != "")
+        {
+            $("#html_message").show();
+            $("#txt_message").hide();
+        }
+        else
+        {
+            $("#html_message").hide();
+            $("#txt_message").show();
+        }
+
+     } );    
+
     /* click on login -> call search page */
     $('#login_button').on('tap', login);
 
     /* get messages data via ajax */
     $("#search_button").on('tap', search);
 
-    /* click on home icon (up-left) -> logout */
-    $(".ui-icon-home").on('tap', logout);
+    /* click on list icon (up-left) -> view menu */
+    $(".menu_btn").on('tap', viewMenu);
+
+    $(".home").on('tap', newSearch);
+    $(".logout").on('tap', logout);
+}
+
+function viewMenu()
+{
+    $("#menu").slideDown();
 }
 
 function checkTimeout(lastUseDate, timeout)
@@ -115,3 +140,4 @@ var guid = function () {
     }
     return _p8() + _p8(true) + _p8(true) + _p8();
 }
+

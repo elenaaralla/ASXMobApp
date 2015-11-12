@@ -5,10 +5,14 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>AsxMobApp</title>
 	<link rel="stylesheet" href="css/index.css" />
-	<link rel="stylesheet" href="themes/asm.min.css" />
+	<link rel="stylesheet" href="themes/asm.css" />
 	<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
 	<link rel="stylesheet" href="css/jquery.mobile.custom.structure.min.css" />
+    <link rel="stylesheet"  href="css/icon-pack-custom.css" />
 	
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/jquery.mobile.js"></script>	
+
 	<!-- MUSTACHE -->
 	<script src="./js/mustache.min.js"></script>
 	<script src="./js/mustache-wax.min.js"></script>
@@ -48,6 +52,7 @@
 	<script type="text/javascript" src="http://cloudfront.loggly.com/js/loggly.tracker-2.0.min.js" async></script>
 	<script type="text/javascript" src="js/debug.js" async></script>
 	<script type="text/javascript" src="js/moment.min.js"></script>
+	<script type="text/javascript" src="js/jquery_regex.js"></script>
 </head>
 <!-- 
 	MESSAGES <LI> TEMPLATE  
@@ -69,15 +74,15 @@
 		"AttachmentsList":<attachments list
 	}
 -->
-
 <script id="messagesHeaderTemplate" type="text/template">
-	<li data-role="list-divider" data-swatch="a" data-form="ui-bar-a" role="heading" class="ui-li-divider ui-bar-a ui-first-child">Search result - {{TotNumResult}}</li>
+	<li id="search_header" data-role="list-divider" data-swatch="a" data-form="ui-bar-a" role="heading" class="ui-li-divider ui-bar-a ui-first-child"><div id="{{Id}}" class="paging"><a href="#" id="search_btn" class="search_first paging_btn ui-btn ui-shadow ui-icon-angle-double-left ui-btn-icon-notext ui-btn-inline">First</a><a href="#" id="search_btn" class="search_previous ui-btn ui-shadow ui-icon-angle-left ui-btn-icon-notext ui-btn-inline">Prev</a><span class="search_result ui-btn-inline">Messaggi <span id="page_range">1-10</span> <span id="tot_msgs" data-totres="{{TotNumResult}}">di 1278</span></span><a href="#" id="search_btn" class="search_next ui-btn ui-shadow ui-icon-angle-right ui-btn-icon-notext ui-btn-inline">Next</a><a href="#" id="search_btn" class="search_last ui-btn ui-shadow ui-icon-angle-double-right ui-btn-icon-notext ui-btn-inline">Last</a></div>
+	</li>
 </script>
 <script id="messagesItemTemplate" type="text/template">
 	{{#messages}}
 		<li class="message" id="{{Id}}">
 			<a class="ui-btn-a ui-btn ui-btn-icon-right ui-icon-carat-r" data-form="ui-btn-up-a" data-swatch="a" href="#">
-				<p class="date ui-li-aside ui-li-desc">{{Date | datetime}}</p>
+				<p class="date ui-li-aside ui-li-desc">{{Date | datetime}}</p><div class="attach" id="attach{{NrAttachments}}"></div>
 				<h3 class="ui-li-heading">{{From}}</h3>
 				<p class="ui-li-desc"><strong>{{Subject}}</strong></p>
 				<p class="ui-li-desc">{{TextBody}}</p>			
@@ -96,18 +101,35 @@
 		<div>{{Date | datetime}}</div>
 	</li>				
 	<li class="ui-li ui-li-static ui-btn-up-a ui-last-child">
-		<div id="d_message">
+		<div id="html_message">
+			{{{HtmlBody}}}
+		</div>		
+		<div id="txt_message">
 			{{TextBody}}
-		</div>
+		</div>	
 	</li>
 </script>	
+<script id="attachmentsItemTemplate" type="text/template">
+	{{#attachments}}
+		<li class="attachment" id="{{Id}}" data-msgId="{{MessageId}}">
+			<a href="#">{{Name}}</a>
+		</li>	
+	{{/attachments}}
+</script>	
 <body>
+	<div id="menu" style="">
+		<ul>
+		    <li><label>ASM</label></li>
+		    <li><a class="home" href="#">Home</a></li>
+	        <li><a class="logout" href="#">Logout</a></li>
+	    </ul>		
+	</div>
 	<div data-role="page" id="login_page" data-theme="a">
 		<div class="ui-header ui-bar-a" data-swatch="a" data-theme="a" data-form="ui-bar-a" data-role="header" role="banner">
-			<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">ASM - Login</h1>
+			<h1 class="ui-title logo" tabindex="0" role="heading" aria-level="1"></h1>
 		</div>
 		<div data-role="content">
-			<input type="url" name="host" id="host" value="http://asx-vwg10" placeholder="http://">
+			<input type="url" name="host" id="host" value="http://asx-vwg10/asxmob" placeholder="http://">
 			<input type="text" name="username" id="username" value="admin" placeholder="username" class="ui-input-text ui-body-c">
 			<input type="password" data-clear-btn="false" name="password" id="password" placeholder="password" value="asm" autocomplete="off" class="ui-input-text ui-body-a">
 			<button id="login_button" data-icon="lock" data-form="ui-btn-up-a" class="ui-btn ui-btn-a ui-icon-lock ui-btn-icon-left ui-shadow ui-corner-all">Login</button>
@@ -120,13 +142,13 @@
 
 	<div data-role="page" id="search_page" data-theme="a">
 		<div class="ui-header ui-bar-a" data-swatch="a" data-theme="a" data-form="ui-bar-a" data-role="header" role="banner">
-			<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-home ui-btn-icon-notext ui-shadow" title=" Home " data-form="ui-icon" data-role="button" role="button"> Home </a>
-			<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">ASM - Search</h1>
+			<a id="custom_btn" class="menu_btn ui-btn-left ui-btn ui-icon-bullets ui-btn-icon-notext ui-shadow" title=" Home " data-form="ui-icon" data-role="button" role="button"> Home </a>
+			<h1 class="ui-title logo" tabindex="0" role="heading" aria-level="1"></h1>
 		</div>
 		<div data-role="content">
+			<input type="hidden" name="cpage" id="cpage" value="1">
 			<input type="search" name="search_criteria" id="search_criteria" value="">
 			<button id="search_button" data-icon="search" data-form="ui-btn-up-a" class="ui-btn ui-btn-a ui-icon-search ui-btn-icon-left ui-shadow ui-corner-all">Search</button>
-			
 			<ul id="search_result" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow">
 				<!-- message item model whith header and last item
 				<li data-role="list-divider" data-swatch="a" data-form="ui-bar-a" role="heading" class="ui-li-divider ui-bar-a ui-first-child">Search result</li>
@@ -145,8 +167,8 @@
 	</div>	
 	<div data-role="page" id="details_page" data-theme="a">
 		<div class="ui-header ui-bar-a" data-swatch="a" data-theme="a" data-form="ui-bar-a" data-role="header" role="banner">
-			<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-home ui-btn-icon-notext ui-shadow" title=" Home " data-form="ui-icon" data-role="button" role="button"> Home </a>
-			<h1 id="d_subject" class="ui-title" tabindex="0" role="heading" aria-level="1"></h1>
+			<a id="custom_btn" class="menu_btn ui-btn-left ui-btn ui-icon-bullets ui-btn-icon-notext ui-shadow" title=" Home " data-form="ui-icon" data-role="button" role="button"> Home </a>
+			<h1 id="d_subject" class="ui-title" tabindex="0" role="heading" aria-level="1">&nbsp;</h1>
 		</div>
 		<div data-role="content">
 			<ul id="message_detail" data-role="listview" class="ui-listview">
@@ -160,7 +182,7 @@
 					<div>31 Luglio 2015 18:27</div>
 				</li>				
 				<li class="ui-li ui-li-static ui-btn-up-a ui-last-child">
-				<div id="d_message">
+				<div id="text_message">
 					Ciao Elena e Stefano,
 					ecco le mie considerazioni (in rosso) relative al processo di PACO.
 					Grazie
@@ -170,13 +192,12 @@
 					luca
 				</div>
 				-->
-				<div><!-- attachments list --></div>
+			</ul>	
+			<ul id="attachments" data-role="listview" class="ui-listview">
 			</ul>		
 			<button id="back_to_search" data-icon="carat-l" data-form="ui-btn-up-a" data-rel="back" class="ui-btn ui-btn-a ui-icon-carat-l ui-btn-icon-left ui-shadow ui-corner-all">Back to search result</button>
 		</div>
 	</div>			
     <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript" src="js/jquery.js"></script>
-    <script type="text/javascript" src="js/jquery.mobile.js"></script>	
 </body>
 </html>

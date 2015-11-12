@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>AsxMobApp</title>
+	<link rel="stylesheet" href="css/index.css" />
+	<link rel="stylesheet" href="themes/asm.min.css" />
+	<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+	<link rel="stylesheet" href="css/jquery.mobile.custom.structure.min.css" />
+    <link rel="stylesheet"  href="css/icon-pack-custom.css" />
+	
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/jquery.mobile.js"></script>	
+</head>
+<!-- 
+	MESSAGES <LI> TEMPLATE  
+	<messages> is an array of object (<message>)
+	
+	<message> is a json object like this
+	{
+		"Id":<message id>,
+		"From":<message from>,
+		"To":<message to>,
+		"Subject":<message subject>,
+		"Date":<message date>,
+		"MsgSize":<message size>,
+		"MsgPriority":<message priority>,
+		"NrAttachments":<message number of attachments>,
+		"MsgLocked":<message is locked>,
+		"HtmlBody":<message html body>,
+		"TextBody":<message text body>,
+		"AttachmentsList":<attachments list
+	}
+-->
+<body>
+
+	<div data-role="page" id="search_page" data-theme="a">
+		<div class="ui-header ui-bar-a" data-swatch="a" data-theme="a" data-form="ui-bar-a" data-role="header" role="banner">
+			<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-home ui-btn-icon-notext ui-shadow" title=" Home " data-form="ui-icon" data-role="button" role="button"> Home </a>
+			<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">ASM - Search</h1>
+		</div>
+		<div data-role="content">
+			<input type="hidden" name="cpage" id="cpage" value="1">
+			<input type="search" name="search_criteria" id="search_criteria" value="">
+			<button id="search_button" data-icon="search" data-form="ui-btn-up-a" class="ui-btn ui-btn-a ui-icon-search ui-btn-icon-left ui-shadow ui-corner-all">Search</button>
+
+
+<div><a href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-angle-double-left ui-btn-icon-notext ui-btn-inline">First</a><a href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-angle-left ui-btn-icon-notext ui-btn-inline">Prev</a><span style="font-weight:bold;width: 7.3rem;white-space: normal;text-align: center;" class="ui-btn-inline">Messaggi <span id="page_range">1-10</span> <span id="tot_msgs" data-totres="{{TotNumResult}}">di 1278</span></span><a href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-angle-right ui-btn-icon-notext ui-btn-inline">Next</a><a href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-angle-double-right ui-btn-icon-notext ui-btn-inline">Last</a></div>
+
+
+		</div>
+	</div>	
+    <script type="text/javascript" src="cordova.js"></script>
+</body>
+</html>

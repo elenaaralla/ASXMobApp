@@ -95,11 +95,24 @@ function search()
     });
 }
 
-function getSearchMessages(src_key)
+var PageRange = function (cpage)
 {
-    numResultXPage = configs.getProperty("resultsNumber");
+    numItemPerPage = configs.getProperty("resultsNumber");
 
-    pagerange = "1-" + numResultXPage;
+    nMsgsFrom = (cpage-1) * numItemPerPage + 1;
+    nMsgsTo = cpage * numItemPerPage;
+
+    return nMsgsFrom + "-" + nMsgsTo;
+}
+
+function getSearchMessages(src_key, cpage)
+{
+    if(!cpage || cpage <= 0)
+    {
+        cpage = 1;
+    }
+
+    pagerange = PageRange(cpage);
 
     method = "GET";
     searchApiPath = "/api/searches/" + src_key + "/messages";   
@@ -124,6 +137,7 @@ function getSearchMessages(src_key)
         crossDomain: false,
         dataType: 'jsonp',
         success: function (data) { 
+
             // load messages header template
             var h_template = $('#messagesHeaderTemplate').html();
             // bind data to template
@@ -133,9 +147,12 @@ function getSearchMessages(src_key)
             var i_template = $('#messagesItemTemplate').html();
             // bind data to template
             var items = Mustache.to_html(i_template, data.messagesList);
-            
+
             // load data into ul...
             $('#search_result').html(header + items);
+            
+            $('#page_range').html(pagerange);
+
             // and show them 
             $("#search_result").css("margin-top","0.3em");
             $('#search_result').show();
@@ -143,6 +160,18 @@ function getSearchMessages(src_key)
             $(".date").css("margin-right","0");
             $(".ui-li-aside").css("right","1em").css("top","0.3em");                
             
+            $("div[class='attach'][id!=attach0]").addClass("paperclip");
+
+            /* click on search previous page */
+            $(".search_previous").on("tap", getPreviousPage);
+            /* click on search next page */
+            $(".search_next").on("tap", getNextPage);
+            /* click on search previous page */
+            $(".search_first").on("tap", getFirstPage);
+            /* click on search next page */
+            $(".search_last").on("tap", getLastPage);
+
+
             // setup click event on <li> (message) item; click on result list -> call details page 
             $(".message").on("tap",vieMessageDetail);
             $(".message").on("swipeleft",vieMessageDetail);
@@ -151,10 +180,70 @@ function getSearchMessages(src_key)
             debug.log("ERROR",e);
             errMsg = e.status + "-" + e.statusText;
             $(".login-error").html(errMsg).show();
-        }
+        },
+
     });     
 }
 
+
+function getFirstPage(e)
+{
+    searchId = this.parentNode.id;
+    $("input#cpage").val("1");
+    getSearchMessages(searchId, 1);
+}
+
+function getPreviousPage(e)
+{
+    searchId = this.parentNode.id;
+
+    numResultXPage = configs.getProperty("resultsNumber");
+    totMsgs = $("#tot_msgs").data("totres");
+
+    TotPages = Math.floor(totMsgs/numResultXPage) + 1;
+    
+    page = ($("input#cpage").val())*1;
+
+    page -= 1;
+
+    if (page > 0)
+    {
+       $("input#cpage").val(page);
+       getSearchMessages(searchId, page);
+    }
+}
+
+function getNextPage(e)
+{
+    searchId = this.parentNode.id;
+
+    numResultXPage = configs.getProperty("resultsNumber");
+    totMsgs = $("#tot_msgs").data("totres");
+
+    TotPages = Math.floor(totMsgs/numResultXPage) + 1;
+    
+    page = ($("input#cpage").val())*1;
+
+    page += 1;
+
+    if (page <= TotPages)
+    {
+       $("input#cpage").val(page);
+       getSearchMessages(searchId, page);
+    }
+}
+
+function getLastPage(e)
+{
+    searchId = this.parentNode.id;
+
+    numResultXPage = configs.getProperty("resultsNumber");
+    totMsgs = $("#tot_msgs").data("totres");
+    TotPages = Math.floor(totMsgs/numResultXPage) + 1;
+
+    $("input#cpage").val(TotPages);
+    getSearchMessages(searchId, TotPages);
+}
 
 function vieMessageDetail()
 {
@@ -196,29 +285,121 @@ GetMessageDetail = function(msg_key)
             
             /* load data into ul... */
             $('#message_detail').html(msg);
+
+            /* load attachments template */
+            var a_template = $('#attachmentsItemTemplate').html();
+            /* bind data to template */
+            var attachments =  Mustache.to_html(a_template, data.AttachmentsList);  
             
+            /* load data into ul... */
+            $('#attachments').html(attachments);
+
+            $("#attachments").css("margin-top","0.3em");
+
             /* make styles adjustment */
             $("#back_to_search").css("margin-top","1.5em");
-            $("#d_message").css("white-space","normal");
+            $("#txt_message").css("white-space","normal");
             $("#sbj").css("white-space","normal");      
             
             // show detail page
             //$.mobile.changePage("#details_page");
             $( ":mobile-pagecontainer" ).pagecontainer( "change", "#details_page", { transition : "none" } );
-            
-            $("#d_subject").html($("#s_subject").html());
+
+            $("#d_subject").html($("#sbj").html());
 
             /* click on "back to search" -> return to seach page */
             $("#back_to_search").on("tap", backToSearch);
             $("#message_detail").on("swiperight", backToSearch);
+
+            /* click on attachment */
+            $(".attachment").on("tap", dnlAndOpenAttach);
+
         },
-        error: function (request,error) {
-            alert('Network error has occurred please try again!');
+        error: function (e) {
+            debug.log("ERROR",e);
+            errMsg = e.status + "-" + e.statusText;
+            $(".login-error").html(errMsg).show();
         }
     });
+}
+
+function newSearch()
+{
+    $("#menu").fadeOut()
+    $( ":mobile-pagecontainer" ).pagecontainer( "change", "#search_page", { transition : "none" } );
 }
 
 function backToSearch(e)
 {
     $( ":mobile-pagecontainer" ).pagecontainer( "change", "#search_page", { transition : "none" } );
+}
+
+function dnlAndOpenAttach(e)
+{
+    attach_id = this.id;
+
+    method = "GET";
+    apiPath = "/api/attachments/" + attach_id + "/test";   
+    bodyContent = "";
+
+    host = currentProfile.getProperty("apiUrl");
+    
+    timestamp = Timestamp();
+
+    basestring = BaseString(host, method, timestamp, apiPath, bodyContent);
+
+    //Authentication:  {cryptedUserLogin}:{signature}
+    authentication = Authentication(basestring);
+
+    attachApi = host + apiPath
+    
+
+    
+    try
+    {
+        var fileTransfer = new FileTransfer();
+        var uri = encodeURI("attachApi");
+        var fileURL = "//cdvfile://localhost/persistent/path/to/downloads/";
+
+        fileTransfer.download(
+            uri,
+            fileURL,
+            function(entry) {
+                console.log("download complete: " + entry.toURL());
+            },
+            function(error) {
+                console.log("download error source " + error.source);
+                console.log("download error target " + error.target);
+                console.log("upload error code" + error.code);
+            },
+            false,
+            {
+                headers: {'Timestamp':timestamp, 'Authentication':authentication, 'Accept':'application/octet-stream'},
+            }
+        );    
+    }
+    catch(err) 
+    {
+        document.location.href =  host + apiPath;
+    }
+
+}
+
+// Download a file form a url.
+function saveFile(url) {
+  // Get file name from url.
+  var filename = url.substring(url.lastIndexOf("/") + 1).split("?")[0];
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'blob';
+  xhr.onload = function() {
+    var a = document.createElement('a');
+    a.href = window.URL.createObjectURL(xhr.response); // xhr.response is a blob
+    a.download = filename; // Set the file name.
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    delete a;
+  };
+  xhr.open('GET', url);
+  xhr.send();
 }

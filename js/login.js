@@ -1,46 +1,100 @@
 function login()
 {
-    $(".login-error").html("").hide();
+    /* verify if host is reachable and what is the server version */
+    if(!checkHost())
+    {
+        return;
+    }
 
+    host = $.trim($("#host").val());
+    versionApi = host + '/api/version?asxcallback=?';
+    var serverVersion = null;
+
+    $.ajax({
+        url: versionApi,
+        type: 'GET',
+        dataType: 'jsonp',
+        timeout: 10000,
+        success: function (data, status) {
+            serverVersion = data.Api;  
+
+            if(serverVersion >= 4)
+            {
+                getPublickey(host);
+            }
+            else
+            {
+                errMsg = "Versione del server [" + data.Server + "] non compatibile.";
+                debug.log("ERROR",errMsg);
+                $(".login-error").html(errMsg).show();
+            }
+        },
+        error: function (e) {
+            debug.log("ERROR",e);
+
+            if(e.status == 0)
+            {
+                errMsg = "Server non raggiungibile; verificare che l'url <strong>" + host + "</strong> specificato sia corretto.";
+            }
+            else
+            {
+                errMsg = e.status + "-" + e.statusText;
+            }
+
+            $(".login-error").html(errMsg).show();
+        }
+    });
+}
+
+function checkHost()
+{
+    $(".login-error").html("").hide();
+    errorMessage = "";
+
+    host = $.trim($("#host").val());
+
+    if(host == "")
+    {
+        errorMessage = "Occorre specificare il campo host."
+        $(".login-error").html("Attenzione: " + errorMessage).show();
+        return false;
+    }
+
+    return true;
+}
+
+function getPublickey(host)
+{
     if(!checkInputData())
     {
         return;
     }
 
-	username  = $("#username").val();
-	password  = $("#password").val();
-	host = $("#host").val();
+    username  = $("#username").val();
+    password  = $("#password").val();
 
-	//richiedo la chiave pubblica
-	var asxpublicKey = "";
-	var publickeysApi = host + '/api/publickeys?asxcallback=?';
+    //richiedo la chiave pubblica
+    var asxpublicKey = "";
+    var publickeysApi = host + '/api/publickeys?asxcallback=?';
 
-	$.ajax({
-	  url: publickeysApi,
-	  type: 'GET',
-	  dataType: 'jsonp',
-      timeout: 3000,
-	  success: function (data, status) {
-		asxpublicKey = "<RSAKeyValue>" + data + "</RSAKeyValue>";
-		debug.log("DEBUG","asxpublicKey = " + asxpublicKey);
-		logInASX(asxpublicKey,host,username,password);
-	  },
-	  error: function (e) {
+    $.ajax({
+      url: publickeysApi,
+      type: 'GET',
+      dataType: 'jsonp',
+      success: function (data, status) {
+        asxpublicKey = "<RSAKeyValue>" + data + "</RSAKeyValue>";
+        debug.log("DEBUG","asxpublicKey = " + asxpublicKey);
+        logInASX(asxpublicKey,host,username,password);
+      },
+      error: function (e) {
 
         debug.log("ERROR",e);
 
-        if(e.status == 0)
-        {
-            errMsg = "Server non raggiungibile; verificare che l'url <strong>" + host + "</strong> specificato sia corretto e lo stato del server.";
-        }
-        else
-        {
-            errMsg = e.status + "-" + e.statusText;
-        }
+        errMsg = e.status + "-" + e.statusText;
 
         $(".login-error").html(errMsg).show();
-	  }
-	});
+      }
+    });
 }
 
 function checkInputData()
@@ -49,10 +103,7 @@ function checkInputData()
 
     var errorMessage = "";
     var emptyFields = [];
-    if($.trim($("#host").val()) == "")
-    {
-        emptyFields.push("host name");
-    }      
+      
     if($.trim($("#username").val()) == "")
     {
         emptyFields.push("username");
@@ -227,8 +278,10 @@ function saveUserData(host,username,cryptedCredential, passwordHash)
 
 function logout()
 {
+    $("#menu").fadeOut();
     currentProfile.clearAuthenticationProperty();
     currentProfile.save();
     //$.mobile.changePage("#login_page");
     $( ":mobile-pagecontainer" ).pagecontainer( "change", "#login_page", { transition : "none" } );
 }
+
