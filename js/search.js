@@ -354,7 +354,8 @@ function downloadAsset() {
             alert("download complete: " + entry.toURL())
             debug.log("ERROR","download complete: " + entry.toURL());
         },
-        function (err) {
+        function (error) {
+            alert(error);
             debug.log("ERROR","download error source " + error.source);
             debug.log("ERROR","download error target " + error.target);
             debug.log("ERROR","download error code " + error.code);
