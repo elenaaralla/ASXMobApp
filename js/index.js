@@ -25,6 +25,10 @@ function initApp()
 
 function onDeviceReady() {
     
+    var store;
+    var assetURL;
+    var fileName;
+
     initApp();
 
     //nelle prossime versioni sarà un elemnto di una lista di profili

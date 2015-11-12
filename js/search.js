@@ -338,6 +338,7 @@ function backToSearch(e)
 function gotSys(fileSystem) {
     alert("Got FS");
     store = fileSystem.root;
+    alert(store);
     alert('Checking file: ' + store.toURL() + fileName);
     window.resolveLocalFileSystemURL(store.toURL() + fileName, appStart, downloadAsset);
 }
@@ -345,10 +346,12 @@ function gotSys(fileSystem) {
 function downloadAsset() {
     var fileTransfer = new FileTransfer();
 
+    alert("FileTransfer exists!!");
     debug.log("ERROR","OK - FileTransfer exists!!");
 
     fileTransfer.download(assetURL, store.toURL() + fileName,
         function (entry) {
+            alert("download complete: " + entry.toURL())
             debug.log("ERROR","download complete: " + entry.toURL());
         },
         function (err) {
@@ -389,9 +392,8 @@ function dnlAndOpenAttach(e)
 
     attachApi = host + apiPath
 
-    var store;
-    var assetURL = encodeURI(attachApi);
-    var fileName = "VOLANTINO 2015 pdf.pdf";
+    assetURL = attachApi;
+    fileName = "VOLANTINO 2015 pdf.pdf";
 
     try
     {
