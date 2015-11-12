@@ -334,6 +334,42 @@ function backToSearch(e)
     $( ":mobile-pagecontainer" ).pagecontainer( "change", "#search_page", { transition : "none" } );
 }
 
+
+function gotSys(fileSystem) {
+    alert("Got FS");
+    store = fileSystem.root;
+    alert('Checking file: ' + store.toURL() + fileName);
+    window.resolveLocalFileSystemURL(store.toURL() + fileName, appStart, downloadAsset);
+}
+
+function downloadAsset() {
+    var fileTransfer = new FileTransfer();
+
+    debug.log("ERROR","OK - FileTransfer exists!!");
+
+    fileTransfer.download(assetURL, store.toURL() + fileName,
+        function (entry) {
+            debug.log("ERROR","download complete: " + entry.toURL());
+        },
+        function (err) {
+            debug.log("ERROR","download error source " + error.source);
+            debug.log("ERROR","download error target " + error.target);
+            debug.log("ERROR","download error code " + error.code);
+            debug.log("ERROR","download http_status " + error.http_status);
+            debug.log("ERROR","download body " + error.body);
+            debug.log("ERROR","download exception " + error.exception);
+        });
+}
+
+function appStart() {
+    alert('file exists');
+    alert(store.toURL() + fileName);
+}
+
+function fail(error) {
+    alert("fail error: " + error);
+}
+
 function dnlAndOpenAttach(e)
 {
     attach_id = this.id;
@@ -353,63 +389,18 @@ function dnlAndOpenAttach(e)
 
     attachApi = host + apiPath
 
+    var store;
+    var assetURL = encodeURI(attachApi);
+    var fileName = "VOLANTINO 2015 pdf.pdf";
+
     try
     {
-        var fileTransfer = new FileTransfer();
-
-        debug.log("ERROR","OK - FileTransfer exists!!");
-
-
-        var uri = encodeURI(attachApi);
-        var fileURL = "cdvfile://localhost/persistent/path/to/download/";
-
-        fileTransfer.download(
-            uri,
-            fileURL,
-            function(entry) {
-                debug.log("ERROR","download complete: " + entry.toURL());
-                debug.log("ERROR","check: " + FileEntry.toURL());
-            },
-            function(error) {
-                debug.log("ERROR","download error source " + error.source);
-                debug.log("ERROR","download error target " + error.target);
-                debug.log("ERROR","download error code " + error.code);
-                debug.log("ERROR","download http_status " + error.http_status);
-                debug.log("ERROR","download body " + error.body);
-                debug.log("ERROR","download exception " + error.exception);
-                debug.log("ERROR","check: " + FileEntry.toURL());
-            },
-            false,
-            {
-                //headers: {'Timestamp':timestamp, 'Authentication':authentication, 'Accept':'application/octet-stream'},
-            }
-        );    
+        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotSys, fail);
     }
     catch(err) 
     {
-        debug.log("ERROR","KO - FileTransfer does not exist!!");
         debug.log("ERROR",err);
-        debug.log("ERROR","Do document.location.href=" +  host + apiPath);
+        debug.log("ERROR","No device detected!");
         document.location.href =  host + apiPath;
     }
-
-}
-
-// Download a file form a url.
-function saveFile(url) {
-  // Get file name from url.
-  var filename = url.substring(url.lastIndexOf("/") + 1).split("?")[0];
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'blob';
-  xhr.onload = function() {
-    var a = document.createElement('a');
-    a.href = window.URL.createObjectURL(xhr.response); // xhr.response is a blob
-    a.download = filename; // Set the file name.
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    delete a;
-  };
-  xhr.open('GET', url);
-  xhr.send();
 }
