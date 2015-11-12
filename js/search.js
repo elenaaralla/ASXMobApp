@@ -374,11 +374,14 @@ function dnlAndOpenAttach(e)
                 debug.log("ERROR","download error source " + error.source);
                 debug.log("ERROR","download error target " + error.target);
                 debug.log("ERROR","download error code " + error.code);
+                debug.log("ERROR","download http_status " + error.http_status);
+                debug.log("ERROR","download body " + error.body);
+                debug.log("ERROR","download exception " + error.exception);
                 debug.log("ERROR","check: " + FileEntry.toURL());
             },
             false,
             {
-                headers: {'Timestamp':timestamp, 'Authentication':authentication, 'Accept':'application/octet-stream'},
+                //headers: {'Timestamp':timestamp, 'Authentication':authentication, 'Accept':'application/octet-stream'},
             }
         );    
     }
