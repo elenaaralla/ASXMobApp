@@ -361,7 +361,7 @@ function dnlAndOpenAttach(e)
 
 
         var uri = encodeURI(attachApi);
-        var fileURL = "//cdvfile://localhost/persistent/path/to/downloads/";
+        var fileURL = "cdvfile://localhost/persistent/path/to/downloads/";
 
         fileTransfer.download(
             uri,
@@ -372,7 +372,7 @@ function dnlAndOpenAttach(e)
             function(error) {
                 debug.log("ERROR","download error source " + error.source);
                 debug.log("ERROR","download error target " + error.target);
-                debug.log("ERROR","upload error code" + error.code);
+                debug.log("ERROR","download error code " + error.code);
             },
             false,
             {
