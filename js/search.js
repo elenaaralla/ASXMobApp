@@ -356,8 +356,11 @@ function dnlAndOpenAttach(e)
     try
     {
         var fileTransfer = new FileTransfer();
+
         debug.log("ERROR","OK - FileTransfer exists!!");
-        var uri = encodeURI("attachApi");
+
+
+        var uri = encodeURI(attachApi);
         var fileURL = "//cdvfile://localhost/persistent/path/to/downloads/";
 
         fileTransfer.download(
