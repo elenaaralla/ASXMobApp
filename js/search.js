@@ -353,11 +353,10 @@ function dnlAndOpenAttach(e)
 
     attachApi = host + apiPath
     
-
-    
     try
     {
         var fileTransfer = new FileTransfer();
+        debug.log("ERROR","OK - FileTransfer exists!!");
         var uri = encodeURI("attachApi");
         var fileURL = "//cdvfile://localhost/persistent/path/to/downloads/";
 
@@ -365,12 +364,12 @@ function dnlAndOpenAttach(e)
             uri,
             fileURL,
             function(entry) {
-                console.log("download complete: " + entry.toURL());
+                debug.log("ERROR","download complete: " + entry.toURL());
             },
             function(error) {
-                console.log("download error source " + error.source);
-                console.log("download error target " + error.target);
-                console.log("upload error code" + error.code);
+                debug.log("ERROR","download error source " + error.source);
+                debug.log("ERROR","download error target " + error.target);
+                debug.log("ERROR","upload error code" + error.code);
             },
             false,
             {
@@ -380,6 +379,9 @@ function dnlAndOpenAttach(e)
     }
     catch(err) 
     {
+        debug.log("ERROR","KO - FileTransfer does not exist!!");
+        debug.log("ERROR",err);
+        debug.log("ERROR","Do document.location.href=" +  host + apiPath);
         document.location.href =  host + apiPath;
     }
 
