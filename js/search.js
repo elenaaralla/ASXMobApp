@@ -345,12 +345,12 @@ function gotSys(fileSystem) {
 
 function downloadAsset() {
     
-    /*var fileTransfer = new FileTransfer();
+    var fileTransfer = new FileTransfer();
 
     alert("FileTransfer exists!!");
     debug.log("ERROR","OK - FileTransfer exists!!");
 
-    fileTransfer.download(assetURL, store.toURL() + fileName,
+    fileTransfer.download(assetURL, "cdvfile://localhost/persistent/" + fileName,
         function (entry) {
             alert("download complete: " + entry.toURL())
             debug.log("ERROR","download complete: " + entry.toURL());
@@ -364,21 +364,6 @@ function downloadAsset() {
             debug.log("ERROR","download body " + error.body);
             debug.log("ERROR","download exception " + error.exception);
         });
-*/
-
-var fileTransfer = new FileTransfer();
-    fileTransfer.download(
-            "http://www.w3.org/2011/web-apps-ws/papers/Nitobi.pdf",
-            "file:///sdcard/theFile.pdf",
-        function(entry) {
-            alert("download complete: " + entry.fullPath);
-        },
-        function(error) {
-            alert("download error source " + error.source);
-            alert("download error target " + error.target);
-            alert("upload error code" + error.code);
-        });
-
 }
 
 function appStart() {
