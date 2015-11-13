@@ -352,11 +352,12 @@ function downloadAsset() {
 
     fileTransfer.download(assetURL, "cdvfile://localhost/persistent/" + fileName,
         function (entry) {
-            alert("download complete: " + entry.toURL())
+            alert("download complete! ")
             debug.log("ERROR","download complete: " + entry.toURL());
         },
         function (error) {
-            alert(error);
+            alert("errore");
+            debug.log("ERROR",error);
             debug.log("ERROR","download error source " + error.source);
             debug.log("ERROR","download error target " + error.target);
             debug.log("ERROR","download error code " + error.code);
