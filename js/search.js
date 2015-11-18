@@ -373,7 +373,7 @@ function downloadAsset(gPersistantPath) {
             debug.log("ERROR","download complete: " + entry.toURL());
         },
         function (error) {
-            alert("Errore.");
+            alert("Errore:" + error);
             debug.log("ERROR",error);
         });
 }
