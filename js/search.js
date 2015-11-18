@@ -355,9 +355,7 @@ function onError(err) {
 
 function downloadAsset(gPersistantPath) {
 
-    fileName = "";
-
-    var fileURL = gPersistantPath + fileName; 
+    var fileURL = gPersistantPath + cAttachName; 
 
     var fileTransfer = new FileTransfer();
 
@@ -375,6 +373,7 @@ function downloadAsset(gPersistantPath) {
 function dnlAndOpenAttach(e)
 {
     cAttachId = this.id;
+    cAttachName = $(this).attr("data-attachFileName");
 
     try
     {
