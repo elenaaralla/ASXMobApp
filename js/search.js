@@ -355,21 +355,15 @@ function onError(err) {
 
 function downloadAsset(gPersistantPath) {
 
-    attach_id = 0;
-
-    host = currentProfile.getProperty("apiUrl");
-
-    var uri = encodeURI(host + "/api/attachments/" + attach_id + "/test");   
-
     fileName = "test.pdf";
-    var fileURL = gPersistantPath + fileName; 
 
+    var fileURL = gPersistantPath + fileName; 
 
     var fileTransfer = new FileTransfer();
 
-    fileTransfer.download(uri, fileURL,
+    fileTransfer.download(attachUri(), fileURL,
         function (entry) {
-             alert("download completato: " + entry.fullPath);
+            alert("download completato: " + entry.fullPath);
             debug.log("ERROR","download complete: " + entry.toURL());
         },
         function (error) {
@@ -380,20 +374,25 @@ function downloadAsset(gPersistantPath) {
 
 function dnlAndOpenAttach(e)
 {
-    attach_id = this.id;
-
-    host = currentProfile.getProperty("apiUrl");
-
-    var uri = encodeURI(host + "/api/attachments/" + attach_id + "/test");   
+    cAttachId = this.id;
 
     try
     {
+        // LocalFileSystem esiste solo su telefonino; il try catch mi permette di testare anche sul browser
         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onSuccess, onError); 
     }
     catch(err) 
     {
         debug.log("ERROR",err);
         debug.log("ERROR","No device detected! It's a browser call.");
-        document.location.href =  uri;
+        document.location.href = attachUri();
     }
 }
+
+
+var attachUri = function()
+{
+    host = currentProfile.getProperty("apiUrl");
+    return encodeURI(host + "/api/attachments/" + cAttachId + "/test");   
+
+}; 
