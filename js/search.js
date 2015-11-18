@@ -335,72 +335,54 @@ function backToSearch(e)
 }
 
 
-function gotSys(fileSystem) {
-    alert("Got FS");
-    store = fileSystem.root;
-    alert(store);
-    alert('Checking file: ' + store.toURL() + fileName);
-    window.resolveLocalFileSystemURL(store.toURL() + fileName, appStart, downloadAsset);
+function onSuccess(fileSystem) {
+    if(device.platform === 'iOS'){
+        gPersistantPath = fileSystem.root.toInternalURL();
+        debug.log("ERROR","<br>IOS persistent file path: " + gPersistantPath);
+    }
+    else{
+        gPersistantPath = cordova.file.externalDataDirectory;
+        debug.log("ERROR","<br>ANDROID persistent file path: " + gPersistantPath);
+    }
+
+    downloadAsset(gPersistantPath);
+
 }
 
-function downloadAsset() {
-    
+function onError(err) {
+    debug.log("ERROR","Error in accessing requestFileSystem" + err);
+}
+
+function downloadAsset(gPersistantPath) {
+
+    attach_id = 0;
+
+    host = currentProfile.getProperty("apiUrl");
+
+    var uri = encodeURI(host + "/api/attachments/" + attach_id + "/test");   
+
+    fileName = "test.pdf";
+    var fileURL = gPersistantPath + fileName; 
+
+
     var fileTransfer = new FileTransfer();
 
-    alert("FileTransfer exists!!");
-    debug.log("ERROR","OK - FileTransfer exists!!");
-
-    fileTransfer.download(assetURL, "cdvfile://localhost/persistent/" + fileName,
+    fileTransfer.download(uri, fileURL,
         function (entry) {
-            alert("download complete! ")
+             alert("download completato: " + entry.fullPath);
             debug.log("ERROR","download complete: " + entry.toURL());
         },
         function (error) {
-            alert("errore");
+            alert("Errore.");
             debug.log("ERROR",error);
-            debug.log("ERROR","download error source " + error.source);
-            debug.log("ERROR","download error target " + error.target);
-            debug.log("ERROR","download error code " + error.code);
-            debug.log("ERROR","download http_status " + error.http_status);
-            debug.log("ERROR","download body " + error.body);
-            debug.log("ERROR","download exception " + error.exception);
         });
-}
-
-function appStart() {
-    alert('file exists');
-    alert(store.toURL() + fileName);
-}
-
-function fail(error) {
-    alert("fail error: " + error);
 }
 
 function dnlAndOpenAttach(e)
 {
-    attach_id = this.id;
-
-    method = "GET";
-    apiPath = "/api/attachments/" + attach_id + "/test";   
-    bodyContent = "";
-
-    host = currentProfile.getProperty("apiUrl");
-    
-    timestamp = Timestamp();
-
-    basestring = BaseString(host, method, timestamp, apiPath, bodyContent);
-
-    //Authentication:  {cryptedUserLogin}:{signature}
-    authentication = Authentication(basestring);
-
-    attachApi = host + apiPath
-
-    assetURL = attachApi;
-    fileName = "VOLANTINO 2015 pdf.pdf";
-
     try
     {
-        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotSys, fail);
+        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onSuccess, onError); 
     }
     catch(err) 
     {
