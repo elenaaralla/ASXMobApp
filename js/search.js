@@ -367,7 +367,13 @@ function downloadAsset(gPersistantPath) {
         function (error) {
             alert("Errore:" + error);
             debug.log("ERROR",error);
-        });
+        }),
+        false,
+        {
+            headers:{
+                "Accept":"application/octet-stream"
+            }
+        };
 }
 
 function dnlAndOpenAttach(e)
