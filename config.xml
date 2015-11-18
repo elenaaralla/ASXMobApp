@@ -26,7 +26,7 @@
     <preference name="AndroidPersistentFileLocation" value="Internal" />
     
     <gap:plugin name="org.apache.cordova.battery-status" source="npm" />
-    <gap:plugin name="org.apache.cordova.camera" />
+    <gap:plugin name="org.apache.cordova.camera" source="pgb" version="0.3.6" />
     <gap:plugin name="org.apache.cordova.media-capture" source="npm" />
     <gap:plugin name="org.apache.cordova.console" source="npm" />
     <gap:plugin name="org.apache.cordova.contacts" source="npm" />
@@ -40,9 +40,10 @@
     <gap:plugin name="org.apache.cordova.globalization" source="npm" />
     <gap:plugin name="org.apache.cordova.inappbrowser" source="npm" />
     <gap:plugin name="org.apache.cordova.media" source="npm" />
-    <gap:plugin name="org.apache.cordova.network-information" source="npm" />
+    <gap:plugin name="org.apache.cordova.network-information" source="npm" version="0.2.3" />
     <gap:plugin name="org.apache.cordova.splashscreen" source="npm" />
     <gap:plugin name="org.apache.cordova.vibration" source="npm" />
+    
     <icon src="icon.png" />
     <icon gap:platform="android" gap:qualifier="ldpi" src="www/res/icon/android/icon-36-ldpi.png" />
     <icon gap:platform="android" gap:qualifier="mdpi" src="www/res/icon/android/icon-48-mdpi.png" />
