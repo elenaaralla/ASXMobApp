@@ -355,7 +355,7 @@ function onError(err) {
 
 function downloadAsset(gPersistantPath) {
 
-    fileName = "test.pdf";
+    fileName = "";
 
     var fileURL = gPersistantPath + fileName; 
 
