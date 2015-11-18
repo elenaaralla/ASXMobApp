@@ -380,6 +380,12 @@ function downloadAsset(gPersistantPath) {
 
 function dnlAndOpenAttach(e)
 {
+    attach_id = this.id;
+
+    host = currentProfile.getProperty("apiUrl");
+
+    var uri = encodeURI(host + "/api/attachments/" + attach_id + "/test");   
+
     try
     {
         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onSuccess, onError); 
@@ -387,7 +393,7 @@ function dnlAndOpenAttach(e)
     catch(err) 
     {
         debug.log("ERROR",err);
-        debug.log("ERROR","No device detected!");
-        document.location.href =  host + apiPath;
+        debug.log("ERROR","No device detected! It's a browser call.");
+        document.location.href =  uri;
     }
 }

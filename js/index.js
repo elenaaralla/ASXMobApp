@@ -1,8 +1,7 @@
 // Device Event Listener
 document.addEventListener("deviceready", onDeviceReady, false);
 
-// debug - per provare senza ripple 
-document.addEventListener("DOMContentLoaded", onDeviceReady, false);
+// debug - per provare senza ripple document.addEventListener("DOMContentLoaded", onDeviceReady, false);
 
 
 var usedProfileName, loginProfiles, configs, currentProfile, debug, cpage, totResult;
