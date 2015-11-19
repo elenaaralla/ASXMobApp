@@ -356,7 +356,7 @@ function onError(err) {
 function downloadAsset(gPersistantPath) {
 
     method = "GET";
-    apiPath = "/api/attachments/" + cAttachId;   
+    apiPath = "/api/attachments/" + cAttachId + "/test";// + giud();   
     bodyContent = "";
 
     host = currentProfile.getProperty("apiUrl");
@@ -386,9 +386,7 @@ function downloadAsset(gPersistantPath) {
         {
             headers:{
                 "Accept":"application/octet-stream",
-                "Authorization": "Basic dGVzdHVzZXJuYW1lOnRlc3RwYXNzd29yZA==",
-                "Timestamp":timestamp, 
-                "Authentication":authentication
+                "Authorization": "Basic dGVzdHVzZXJuYW1lOnRlc3RwYXNzd29yZA=="
             }
         };
 }
