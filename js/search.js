@@ -362,7 +362,7 @@ function downloadAsset(gPersistantPath) {
     host = currentProfile.getProperty("apiUrl");
     timestamp = Timestamp();
 
-    attachUri = encodeURI(host + apiPath + cAttachId);   
+    attachUri = encodeURI(host + apiPath);   
 
     basestring = BaseString(host, method, timestamp, apiPath, bodyContent);
 
