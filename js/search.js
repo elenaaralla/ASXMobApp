@@ -355,17 +355,27 @@ function onError(err) {
 
 function downloadAsset(gPersistantPath) {
 
+    method = "GET";
+    apiPath = "/api/attachments/" + cAttachId;   
+    bodyContent = "";
+
+    host = currentProfile.getProperty("apiUrl");
+    timestamp = Timestamp();
+
+    attachUri = encodeURI(host + apiPath + cAttachId);   
+
+    basestring = BaseString(host, method, timestamp, apiPath, bodyContent);
+
+    //Authentication:  {cryptedUserLogin}:{signature}
+    authentication = Authentication(basestring);
+
     var fileURL = gPersistantPath + cAttachName; 
 
     var fileTransfer = new FileTransfer();
 
-    fileTransfer.download(attachUri(), fileURL,
+    fileTransfer.download(attachUri, fileURL,
         function (entry) {
-            alert("download completato: " + entry.fullPath);
-
             debug.log("ERROR","download complete: " + entry.toURL());
-            debug.log("ERROR","download complete: " + entry.toNativeURL());
-
             window.open(entry.toNativeURL(), '_blank', 'location=no,closebuttoncaption=Close,enableViewportScale=yes');
         },
         function (error) {
@@ -375,7 +385,9 @@ function downloadAsset(gPersistantPath) {
         false,
         {
             headers:{
-                "Accept":"application/octet-stream"
+                "Accept":"application/octet-stream",
+                "Timestamp":timestamp, 
+                "Authentication":authentication
             }
         };
 }
@@ -394,14 +406,8 @@ function dnlAndOpenAttach(e)
     {
         debug.log("ERROR",err);
         debug.log("ERROR","No device detected! It's a browser call.");
-        document.location.href = attachUri();
+        host = currentProfile.getProperty("apiUrl");
+        attachUri = encodeURI(host + "/api/attachments/" + cAttachId + "/test");   
+        document.location.href = attachUri;
     }
 }
-
-
-var attachUri = function()
-{
-    host = currentProfile.getProperty("apiUrl");
-    return encodeURI(host + "/api/attachments/" + cAttachId + "/test");   
-
-}; 
