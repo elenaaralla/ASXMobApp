@@ -386,6 +386,7 @@ function downloadAsset(gPersistantPath) {
         {
             headers:{
                 "Accept":"application/octet-stream",
+                "Authorization": "Basic dGVzdHVzZXJuYW1lOnRlc3RwYXNzd29yZA==",
                 "Timestamp":timestamp, 
                 "Authentication":authentication
             }
