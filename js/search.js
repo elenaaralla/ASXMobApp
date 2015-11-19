@@ -356,7 +356,7 @@ function onError(err) {
 function downloadAsset(gPersistantPath) {
 
     method = "GET";
-    apiPath = "/api/attachments/" + cAttachId + "/test";// + giud();   
+    apiPath = "/api/attachments/" + cAttachId + "/" + guid();   
     bodyContent = "";
 
     host = currentProfile.getProperty("apiUrl");
