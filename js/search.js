@@ -362,7 +362,11 @@ function downloadAsset(gPersistantPath) {
     fileTransfer.download(attachUri(), fileURL,
         function (entry) {
             alert("download completato: " + entry.fullPath);
+
             debug.log("ERROR","download complete: " + entry.toURL());
+            debug.log("ERROR","download complete: " + entry.toNativeURL());
+
+            window.open(entry.toNativeURL(), '_blank', 'location=no,closebuttoncaption=Close,enableViewportScale=yes');
         },
         function (error) {
             alert("Errore:" + error);

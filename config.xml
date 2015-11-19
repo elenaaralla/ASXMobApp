@@ -41,7 +41,7 @@
     <gap:plugin name="org.apache.cordova.network-information" source="npm" version="0.2.3" />
     <gap:plugin name="org.apache.cordova.splashscreen" source="npm" />
     <gap:plugin name="org.apache.cordova.vibration" source="npm" />
-
+    <gap:plugin name="cordova-plugin-file" source="npm" />
     <!-- file-transfer: questo plugin permette di scaricare in locale dei file da specifici url -->
     <gap:plugin name="cordova-plugin-file-transfer" source="npm" version="1.3.0 " />
     <!-- whitelist: questo plugin permette di configurare i domini a cui l'applicazione può accedere via http, https ecc.
