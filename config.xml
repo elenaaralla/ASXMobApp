@@ -40,7 +40,7 @@
     <gap:plugin name="org.apache.cordova.media" source="npm" />
     <gap:plugin name="org.apache.cordova.network-information" source="npm" version="0.2.3" />
     <gap:plugin name="org.apache.cordova.splashscreen" source="npm" />
-    <gap:plugin name="org.apache.cordova.vibration" source="npm" />
+    <gap:plugin name="org.apache.cordova.vibration" source="npm" version="1.4.0" />
     <gap:plugin name="cordova-plugin-file" />
     <!-- file-transfer: questo plugin permette di scaricare in locale dei file da specifici url -->
     <gap:plugin name="cordova-plugin-file-transfer" source="npm" />
@@ -73,12 +73,17 @@
     <gap:splash gap:platform="ios" height="1024" src="www/res/screen/ios/screen-ipad-portrait.png" width="768" />
     <gap:splash gap:platform="ios" height="768" src="www/res/screen/ios/screen-ipad-landscape.png" width="1024" />
     <gap:splash gap:platform="winphone" src="www/res/screen/windows-phone/screen-portrait.jpg" />
-    <access origin="*" />
+    <!--<access origin="*" />-->
 
     <!-- allow-navigation questa configurazione dice al plugin whitelist che tutti i domini possono essere contattati; in questo modo si riesce a far funzionare il plugin filetransfer che permette di scaricare in locale un file da un URL (nel nostro caso per il download in locale degli allegati -->
-    <allow-navigation href="http://*/*" />
+    <!-- <allow-navigation href="http://*/*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
+    -->
+    <allow-navigation href="*" />
+    <allow-intent href="*" />
+    <access origin="*" /> <!-- Required for iOS9 -->
+
     <allow-intent href="tel:*" />
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
