@@ -40,10 +40,10 @@
     <gap:plugin name="org.apache.cordova.media" source="npm" />
     <gap:plugin name="org.apache.cordova.network-information" source="npm" version="0.2.3" />
     <gap:plugin name="org.apache.cordova.splashscreen" source="npm" />
-    <gap:plugin name="org.apache.cordova.vibration" source="npm" version="1.4.0" />
+    <gap:plugin name="org.apache.cordova.vibration" source="npm" />
     <gap:plugin name="cordova-plugin-file" />
     <!-- file-transfer: questo plugin permette di scaricare in locale dei file da specifici url -->
-    <gap:plugin name="cordova-plugin-file-transfer" source="npm" />
+    <gap:plugin name="cordova-plugin-file-transfer" source="npm" version="1.4.0" />
     <!-- whitelist: questo plugin permette di configurare i domini a cui l'applicazione può accedere via http, https ecc.
          serve per far funzionare il plugin filetransfer che permette di scaricare in locale dei file da un determinato url (nel nostro caso gli allegati di una mail) -->
     <gap:plugin name="cordova-plugin-whitelist" version="1.0.0" source = "npm"/>
