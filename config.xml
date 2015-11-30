@@ -7,7 +7,8 @@
     <author>
         AsxMobApp Team
     </author>
-    <content src="main.html" />
+    <content src="index.html" />
+    <preference name="phonegap-version" value="cli-5.2.0"/>
     <preference name="permissions" value="none" />
     <preference name="orientation" value="default" />
     <preference name="target-device" value="universal" />
@@ -24,29 +25,21 @@
     <preference name="android-minSdkVersion" value="10" />
     <preference name="android-installLocation" value="auto" />
     <preference name="AndroidPersistentFileLocation" value="Internal" />
+    <preference name="iosPersistentFileLocation" value="Library" />    
+
     
-    <gap:plugin name="org.apache.cordova.battery-status" source="npm" />
-    <gap:plugin name="org.apache.cordova.camera" source="pgb" version="0.3.6" />
-    <gap:plugin name="org.apache.cordova.media-capture" source="npm" />
-    <gap:plugin name="org.apache.cordova.console" source="npm" />
-    <gap:plugin name="org.apache.cordova.contacts" source="npm" />
-    <gap:plugin name="org.apache.cordova.device" source="npm" />
-    <gap:plugin name="org.apache.cordova.device-motion" source="npm" />
-    <gap:plugin name="org.apache.cordova.device-orientation" source="npm" />
-    <gap:plugin name="org.apache.cordova.dialogs" source="npm" />
-    <gap:plugin name="org.apache.cordova.geolocation" source="npm" />
-    <gap:plugin name="org.apache.cordova.globalization" source="npm" />
-    <gap:plugin name="org.apache.cordova.inappbrowser" source="npm" />
-    <gap:plugin name="org.apache.cordova.media" source="npm" />
-    <gap:plugin name="org.apache.cordova.network-information" source="npm" version="0.2.3" />
-    <gap:plugin name="org.apache.cordova.splashscreen" source="npm" />
-    <gap:plugin name="org.apache.cordova.vibration" source="npm" />
-    <gap:plugin name="cordova-plugin-file" />
+    <gap:plugin name="cordova-plugin-console" version="1.0.1" source = "npm"/>
+    <gap:plugin name="cordova-plugin-device-orientation" version="1.0.1" source = "npm"/> 
+    <gap:plugin name="cordova-plugin-globalization" version="1.0.1" source = "npm"/>
+    <gap:plugin name="cordova-plugin-inappbrowser" version="1.0.1" source = "npm"/> 
+    <gap:plugin name="cordova-plugin-network-information" version="1.0.1" source = "npm"/>
+    <gap:plugin name="cordova-plugin-device" version="1.0.1" source = "npm"/>
+    
     <!-- file-transfer: questo plugin permette di scaricare in locale dei file da specifici url -->
-    <gap:plugin name="cordova-plugin-file-transfer" source="npm" />
+    <gap:plugin name="cordova-plugin-file-transfer" source="npm" version="1.3.0 " />
     <!-- whitelist: questo plugin permette di configurare i domini a cui l'applicazione può accedere via http, https ecc.
          serve per far funzionare il plugin filetransfer che permette di scaricare in locale dei file da un determinato url (nel nostro caso gli allegati di una mail) -->
-    <gap:plugin name="cordova-plugin-whitelist" version="1.0.0" source = "npm"/>
+    <gap:plugin name="cordova-plugin-whitelist" version="1.1.0" source = "npm"/>
 
     <icon src="icon.png" />
     <icon gap:platform="android" gap:qualifier="ldpi" src="www/res/icon/android/icon-36-ldpi.png" />
@@ -73,7 +66,7 @@
     <gap:splash gap:platform="ios" height="1024" src="www/res/screen/ios/screen-ipad-portrait.png" width="768" />
     <gap:splash gap:platform="ios" height="768" src="www/res/screen/ios/screen-ipad-landscape.png" width="1024" />
     <gap:splash gap:platform="winphone" src="www/res/screen/windows-phone/screen-portrait.jpg" />
-    <!--<access origin="*" />-->
+    <access origin=".*" />
 
     <!-- allow-navigation questa configurazione dice al plugin whitelist che tutti i domini possono essere contattati; in questo modo si riesce a far funzionare il plugin filetransfer che permette di scaricare in locale un file da un URL (nel nostro caso per il download in locale degli allegati -->
     <!-- <allow-navigation href="http://*/*" />
@@ -82,7 +75,6 @@
     -->
     <allow-navigation href="*" />
     <allow-intent href="*" />
-    <access origin="*" /> <!-- Required for iOS9 -->
 
     <allow-intent href="tel:*" />
     <allow-intent href="sms:*" />

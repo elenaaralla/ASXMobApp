@@ -375,20 +375,24 @@ function downloadAsset(gPersistantPath) {
 
     fileTransfer.download(attachUri, fileURL,
         function (entry) {
+            alert("download complete: " + entry.fullPath);
             debug.log("ERROR","download complete: " + entry.toURL());
             window.open(entry.toNativeURL(), '_blank', 'location=no,closebuttoncaption=Close,enableViewportScale=yes');
         },
         function (error) {
             alert("Errore:" + error);
             debug.log("ERROR",error);
-        }),
+        },
         false,
         {
-            headers:{
+            headers: {
+                "Connection": "close",
                 "Accept":"application/octet-stream",
-                "Authorization": "Basic dGVzdHVzZXJuYW1lOnRlc3RwYXNzd29yZA=="
+                "Timestamp": "123456",
+                "Authentication": "elena",
             }
-        };
+        }            
+    );
 }
 
 function dnlAndOpenAttach(e)
