@@ -388,8 +388,8 @@ function downloadAsset(gPersistantPath) {
             headers: {
                 "Connection": "close",
                 "Accept":"application/octet-stream",
-                "Timestamp": "123456",
-                "Authentication": "elena",
+                "Timestamp": timestamp,
+                "Authentication": authentication,
             }
         }            
     );
