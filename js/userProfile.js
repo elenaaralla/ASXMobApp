@@ -23,7 +23,7 @@ function Profile (profileName,apiUrl,username,cryptedCredential,passwordHash,las
 Configs.prototype.save = function ()
 {
 	window.localStorage.setItem("configs", JSON.stringify(this));
-}
+};
 
 Configs.prototype.get = function()
 {
@@ -56,24 +56,23 @@ LoginProfiles.prototype.getProfiles = function()
 
 LoginProfiles.prototype.getLastUsed = function()
 {
-	profiles = this.getProfiles().sort(compare);
+	var profiles = this.getProfiles().sort(compare);
 	return profiles[0];
 };
 
 LoginProfiles.prototype.getProfileByName = function(profileName)
 {
-	profiles = this.getProfiles();
-	if (profiles != null) {
+	var profiles = this.getProfiles();
+	if (profiles !== null) {
 		for (var i = profiles.length - 1; i >= 0; i--) {
-			profile = profiles[i];
+			var profile = profiles[i];
 
 			if(profile.profileName == profileName)
 			{
 				return profile;
-				break;
 			}
-		};
-	};
+		}
+	}
 	return null;
 };
 
@@ -98,12 +97,12 @@ LoginProfiles.prototype.remove = function()
 LoginProfiles.prototype.addProfile = function(profile)
 {
 	//se non esiste lo aggiungo, altrimenti lo sostituisco
-	profile_ = this.getProfileByName(profile.profileName);
+	var profile_ = this.getProfileByName(profile.profileName);
 
-	if(profile_ == null)//non esiste
+	if(profile_ === null)//non esiste
 	{
 		//lo aggiungo
-		if(this.profiles != null)
+		if(this.profiles !== null)
 		{
 			this.profiles.push(profile);
 			this.save();
@@ -111,17 +110,17 @@ LoginProfiles.prototype.addProfile = function(profile)
 	}
 	else
 	{
-		this.saveProfile(profile)
+		this.saveProfile(profile);
 	}
 };
 
 LoginProfiles.prototype.removeProfile = function(profile)
 {
-	profileIndex=-1;
-	profiles = this.getProfiles();
+	var profileIndex=-1;
+	var profiles = this.getProfiles();
 
 	for (var i = profiles.length - 1; i >= 0; i--) {
-		_profile = profiles[i];
+		var _profile = profiles[i];
 
 		if(_profile.profileName == profile.profileName)
 		{
@@ -134,7 +133,7 @@ LoginProfiles.prototype.removeProfile = function(profile)
     	profiles.splice(profileIndex, 1);
     	this.save();
 	}
-}
+};
 
 LoginProfiles.prototype.saveProfile = function(profile)
 {
@@ -145,7 +144,7 @@ LoginProfiles.prototype.saveProfile = function(profile)
 
 Profile.prototype.save = function()
 {
-	loginProfiles = new LoginProfiles();
+	var loginProfiles = new LoginProfiles();
 	loginProfiles.saveProfile(this);
 };
 
@@ -159,7 +158,7 @@ Profile.prototype.clearAuthenticationProperty = function()
 	this.cryptedCredential = "";
 	this.passwordHash = "";
 	this.save();
-}
+};
 
 function compare (a,b)
 {

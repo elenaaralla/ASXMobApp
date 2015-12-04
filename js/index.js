@@ -33,11 +33,7 @@ function onDeviceReady() {
     //nelle prossime versioni sarà un elemnto di una lista di profili
     currentProfile = loginProfiles.getProfileByName(usedProfileName);
 
-    if( currentProfile != null 
-        && currentProfile.getProperty("cryptedCredential") != null 
-        && currentProfile.getProperty("passwordHash") != null
-        && checkTimeout(currentProfile.getProperty("lastUseDate"), configs.getProperty("timeout")) 
-        )
+    if( currentProfile !== null && currentProfile.getProperty("cryptedCredential") !== null && currentProfile.getProperty("passwordHash") !== null && checkTimeout(currentProfile.getProperty("lastUseDate"), configs.getProperty("timeout")))
     {
         //$.mobile.changePage("#search_page");
         $( ":mobile-pagecontainer" ).pagecontainer( "change", "#search_page", { transition : "none" } );
@@ -48,7 +44,7 @@ function onDeviceReady() {
         $( ":mobile-pagecontainer" ).pagecontainer( "change", "#login_page", { transition : "none" } );
     }
 
-    $("#login_page").on( "pagebeforeshow", function( event ) {
+    $("#login_page").on( "pagebeforeshow", function() {
         
         if(currentProfile)
         {
@@ -62,11 +58,11 @@ function onDeviceReady() {
      } );
 
 
-    $("#search_page").on( "pageshow", function( event ) {
+    $("#search_page").on( "pageshow", function() {
         
         if($(".msg_selected").offset())
         {
-            scrollto = $(".msg_selected").offset().top;
+            var scrollto = $(".msg_selected").offset().top;
             $.mobile.silentScroll(scrollto);
             $(".msg_selected").removeClass("msg_selected");
         }
@@ -74,9 +70,9 @@ function onDeviceReady() {
      } );    
 
 
-    $("#details_page").on( "pageshow", function( event ) {
+    $("#details_page").on( "pageshow", function() {
         
-        if($("#html_message").html() != "")
+        if($("#html_message").html() !== "")
         {
             $("#html_message").show();
             $("#txt_message").hide();
@@ -90,16 +86,16 @@ function onDeviceReady() {
      } );    
 
     /* click on login -> call search page */
-    $('#login_button').on('tap', login);
+    $("#login_button").on("tap", login);
 
     /* get messages data via ajax */
-    $("#search_button").on('tap', search);
+    $("#search_button").on("tap", search);
 
     /* click on list icon (up-left) -> view menu */
-    $(".menu_btn").on('tap', viewMenu);
+    $(".menu_btn").on("tap", viewMenu);
 
-    $(".home").on('tap', newSearch);
-    $(".logout").on('tap', logout);
+    $(".home").on("tap", newSearch);
+    $(".logout").on("tap", logout);
 }
 
 function viewMenu()
@@ -109,14 +105,14 @@ function viewMenu()
 
 function checkTimeout(lastUseDate, timeout)
 {
-    if(lastUseDate==null)
+    if(lastUseDate===null)
         return false;
 
-    d2 = new Date();
+    var d2 = new Date();
 
-    d1 = new Date(JSON.parse(lastUseDate));
+    var d1 = new Date(JSON.parse(lastUseDate));
 
-    diff = d2.getTime() - d1.getTime(); //diff in millisecond
+    var diff = d2.getTime() - d1.getTime(); //diff in millisecond
 
     if(diff/(1000*60) > timeout) // timeout in minutes
     {
@@ -138,5 +134,5 @@ var guid = function () {
         return s ? p.substr(0,4) + p.substr(4,4) : p ;
     }
     return _p8() + _p8(true) + _p8(true) + _p8();
-}
+};
 

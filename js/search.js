@@ -54,42 +54,42 @@ function SearchModel(id,name,lastUsed,instance)
 
 var Authentication = function(basestring)
 {
-    cryptedCredentials =  currentProfile.getProperty("cryptedCredential");
-    passwordHash = currentProfile.getProperty("passwordHash");
+    var cryptedCredentials =  currentProfile.getProperty("cryptedCredential");
+    var passwordHash = currentProfile.getProperty("passwordHash");
 
     //Authentication:  {cryptedUserLogin}:{signature}
     return cryptedCredentials + ":" + Signature(basestring, passwordHash);
-}
+};
 
 function search()
 {
-    method = "POST";
-    searchApiPath = "/api/searches";   
-    bodyContent = JSON.stringify(new SearchModel(0,"New mobile search",new Date(),guid()));
+    var method = "POST";
+    var searchApiPath = "/api/searches";   
+    var bodyContent = JSON.stringify(new SearchModel(0,"New mobile search",new Date(),guid()));
 
-    timestamp = Timestamp();
-    host = currentProfile.getProperty("apiUrl");
-    basestring = BaseString(host, method, timestamp, searchApiPath, bodyContent);
+    var timestamp = Timestamp();
+    var host = currentProfile.getProperty("apiUrl");
+    var basestring = BaseString(host, method, timestamp, searchApiPath, bodyContent);
 
-    authentication = Authentication(basestring);
+    var authentication = Authentication(basestring);
 
-    searchApi = host + searchApiPath + "?asxcallback=?";
+    var searchApi = host + searchApiPath + "?asxcallback=?";
 
     $.ajax({
         url: searchApi,
         type: method,
-        headers: {'Timestamp':timestamp, 'Authentication':authentication, 'Content-Type': 'application/json; charset=utf-8'},
+        headers: {"Timestamp":timestamp, "Authentication":authentication, "Content-Type": "application/json; charset=utf-8"},
         data: bodyContent,
         processData: false,
         crossDomain: false,
-        dataType: 'jsonp',
+        dataType: "jsonp",
         success: function (data) {
             debug.log("DEBUG",data);
             getSearchMessages(data.Id);
         },
         error: function (e) {
             debug.log("ERROR",e);
-            errMsg = e.status + "-" + e.statusText;
+            var errMsg = e.status + "-" + e.statusText;
             $(".login-error").html(errMsg).show();
         }
     });
@@ -97,13 +97,13 @@ function search()
 
 var PageRange = function (cpage)
 {
-    numItemPerPage = configs.getProperty("resultsNumber");
+    var numItemPerPage = configs.getProperty("resultsNumber");
 
-    nMsgsFrom = (cpage-1) * numItemPerPage + 1;
-    nMsgsTo = cpage * numItemPerPage;
+    var nMsgsFrom = (cpage-1) * numItemPerPage + 1;
+    var nMsgsTo = cpage * numItemPerPage;
 
     return nMsgsFrom + "-" + nMsgsTo;
-}
+};
 
 function getSearchMessages(src_key, cpage)
 {
@@ -112,50 +112,50 @@ function getSearchMessages(src_key, cpage)
         cpage = 1;
     }
 
-    pagerange = PageRange(cpage);
+    var pagerange = PageRange(cpage);
 
-    method = "GET";
-    searchApiPath = "/api/searches/" + src_key + "/messages";   
-    bodyContent = "";
+    var method = "GET";
+    var searchApiPath = "/api/searches/" + src_key + "/messages";   
+    var bodyContent = "";
 
-    host = currentProfile.getProperty("apiUrl");
-    timestamp = Timestamp();
+    var host = currentProfile.getProperty("apiUrl");
+    var timestamp = Timestamp();
 
-    basestring = BaseString(host, method, timestamp, searchApiPath, bodyContent);
+    var basestring = BaseString(host, method, timestamp, searchApiPath, bodyContent);
 
     //Authentication:  {cryptedUserLogin}:{signature}
-    authentication = Authentication(basestring);
+    var authentication = Authentication(basestring);
 
-    searchApi = host + searchApiPath + "?asxcallback=?"
+    var searchApi = host + searchApiPath + "?asxcallback=?";
 
     $.ajax({
         url: searchApi,
         type: method,
-        headers: {'Timestamp':timestamp, 'Authentication':authentication},
+        headers: {"Timestamp":timestamp, "Authentication":authentication},
         data: {"page_range":pagerange, "sort_column": "colDate", "sort_type":"1"},
         processData: true,        
         crossDomain: false,
-        dataType: 'jsonp',
+        dataType: "jsonp",
         success: function (data) { 
 
             // load messages header template
-            var h_template = $('#messagesHeaderTemplate').html();
+            var h_template = $("#messagesHeaderTemplate").html();
             // bind data to template
             var header = Mustache.to_html(h_template, data);        
             
             // load messages template
-            var i_template = $('#messagesItemTemplate').html();
+            var i_template = $("#messagesItemTemplate").html();
             // bind data to template
             var items = Mustache.to_html(i_template, data.messagesList);
 
             // load data into ul...
-            $('#search_result').html(header + items);
+            $("#search_result").html(header + items);
             
-            $('#page_range').html(pagerange);
+            $("#page_range").html(pagerange);
 
             // and show them 
             $("#search_result").css("margin-top","0.3em");
-            $('#search_result').show();
+            $("#search_result").show();
             
             $(".date").css("margin-right","0");
             $(".ui-li-aside").css("right","1em").css("top","0.3em");                
@@ -178,7 +178,7 @@ function getSearchMessages(src_key, cpage)
         },
         error: function (e) {
             debug.log("ERROR",e);
-            errMsg = e.status + "-" + e.statusText;
+            var errMsg = e.status + "-" + e.statusText;
             $(".login-error").html(errMsg).show();
         },
 
@@ -188,21 +188,21 @@ function getSearchMessages(src_key, cpage)
 
 function getFirstPage(e)
 {
-    searchId = this.parentNode.id;
+    var searchId = this.parentNode.id;
     $("input#cpage").val("1");
     getSearchMessages(searchId, 1);
 }
 
 function getPreviousPage(e)
 {
-    searchId = this.parentNode.id;
+    var searchId = this.parentNode.id;
 
-    numResultXPage = configs.getProperty("resultsNumber");
-    totMsgs = $("#tot_msgs").data("totres");
+    var numResultXPage = configs.getProperty("resultsNumber");
+    var totMsgs = $("#tot_msgs").data("totres");
 
-    TotPages = Math.floor(totMsgs/numResultXPage) + 1;
+    var TotPages = Math.floor(totMsgs/numResultXPage) + 1;
     
-    page = ($("input#cpage").val())*1;
+    var page = ($("input#cpage").val())*1;
 
     page -= 1;
 
@@ -215,14 +215,14 @@ function getPreviousPage(e)
 
 function getNextPage(e)
 {
-    searchId = this.parentNode.id;
+    var searchId = this.parentNode.id;
 
-    numResultXPage = configs.getProperty("resultsNumber");
-    totMsgs = $("#tot_msgs").data("totres");
+    var numResultXPage = configs.getProperty("resultsNumber");
+    var totMsgs = $("#tot_msgs").data("totres");
 
-    TotPages = Math.floor(totMsgs/numResultXPage) + 1;
+    var TotPages = Math.floor(totMsgs/numResultXPage) + 1;
     
-    page = ($("input#cpage").val())*1;
+    var page = ($("input#cpage").val())*1;
 
     page += 1;
 
@@ -235,11 +235,11 @@ function getNextPage(e)
 
 function getLastPage(e)
 {
-    searchId = this.parentNode.id;
+    var searchId = this.parentNode.id;
 
-    numResultXPage = configs.getProperty("resultsNumber");
-    totMsgs = $("#tot_msgs").data("totres");
-    TotPages = Math.floor(totMsgs/numResultXPage) + 1;
+    var numResultXPage = configs.getProperty("resultsNumber");
+    var totMsgs = $("#tot_msgs").data("totres");
+    var TotPages = Math.floor(totMsgs/numResultXPage) + 1;
 
     $("input#cpage").val(TotPages);
     getSearchMessages(searchId, TotPages);
@@ -253,46 +253,44 @@ function vieMessageDetail()
 }
 
 /* get message data via ajax */
-GetMessageDetail = function(msg_key)
+var GetMessageDetail = function(msg_key)
 {
-    method = "GET";
-    apiPath = "/api/messages/" + msg_key;   
-    bodyContent = "";
+    var method = "GET";
+    var apiPath = "/api/messages/" + msg_key;   
+    var bodyContent = "";
 
-    host = currentProfile.getProperty("apiUrl");
-    timestamp = Timestamp();
+    var host = currentProfile.getProperty("apiUrl");
+    var timestamp = Timestamp();
 
-    basestring = BaseString(host, method, timestamp, apiPath, bodyContent);
+    var basestring = BaseString(host, method, timestamp, apiPath, bodyContent);
 
     //Authentication:  {cryptedUserLogin}:{signature}
-    authentication = Authentication(basestring);
+    var authentication = Authentication(basestring);
 
-    messageApi = host + apiPath + "?asxcallback=?"
+    var messageApi = host + apiPath + "?asxcallback=?";
 
     $.ajax({
         url: messageApi,
         type: method,
-        headers: {'Timestamp':timestamp, 'Authentication':authentication},
-        data: {"page_range":pagerange, "sort_column": "colDate", "sort_type":"1"},
-        processData: true,        
+        headers: {"Timestamp":timestamp, "Authentication":authentication},       
         crossDomain: false,
-        dataType: 'jsonp',
+        dataType: "jsonp",
         success: function (data) { 
             /* load message template */
-            var d_template = $('#messageTemplate').html();
+            var d_template = $("#messageTemplate").html();
             /* bind data to template */
             var msg = Mustache.to_html(d_template, data);       
             
             /* load data into ul... */
-            $('#message_detail').html(msg);
+            $("#message_detail").html(msg);
 
             /* load attachments template */
-            var a_template = $('#attachmentsItemTemplate').html();
+            var a_template = $("#attachmentsItemTemplate").html();
             /* bind data to template */
             var attachments =  Mustache.to_html(a_template, data.AttachmentsList);  
             
             /* load data into ul... */
-            $('#attachments').html(attachments);
+            $("#attachments").html(attachments);
 
             $("#attachments").css("margin-top","0.3em");
 
@@ -317,15 +315,15 @@ GetMessageDetail = function(msg_key)
         },
         error: function (e) {
             debug.log("ERROR",e);
-            errMsg = e.status + "-" + e.statusText;
+            var errMsg = e.status + "-" + e.statusText;
             $(".login-error").html(errMsg).show();
         }
     });
-}
+};
 
 function newSearch()
 {
-    $("#menu").fadeOut()
+    $("#menu").fadeOut();
     $( ":mobile-pagecontainer" ).pagecontainer( "change", "#search_page", { transition : "none" } );
 }
 
@@ -336,63 +334,106 @@ function backToSearch(e)
 
 
 function onSuccess(fileSystem) {
-    if(device.platform === 'iOS'){
-        gPersistantPath = fileSystem.root.toInternalURL();
-        debug.log("ERROR","<br>IOS persistent file path: " + gPersistantPath);
+    var device;
+    var gPersistantPath;
+
+    try
+    {
+        if(device.platform === "iOS"){
+            gPersistantPath = fileSystem.root.toInternalURL();
+            debug.log("ERROR","<br>IOS persistent file path: " + gPersistantPath);
+        }
+        else{
+            gPersistantPath = cordova.file.externalDataDirectory;
+            debug.log("ERROR","<br>ANDROID persistent file path: " + gPersistantPath);
+        }
     }
-    else{
-        gPersistantPath = cordova.file.externalDataDirectory;
-        debug.log("ERROR","<br>ANDROID persistent file path: " + gPersistantPath);
+    catch(err) 
+    {
+        debug.log("ERROR",err);
+        gPersistantPath = "";
     }
 
     downloadAsset(gPersistantPath);
-
 }
 
 function onError(err) {
     debug.log("ERROR","Error in accessing requestFileSystem" + err);
 }
 
+function saveData(data, cAttachName) {
+    var a = document.createElement("a");
+    $("#attachments").append(a);
+    a.style = "display: none";
+    var blob = new Blob([data]);
+    var url = window.URL.createObjectURL(blob);
+    a.href = url;
+    a.download = cAttachName;
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
+
 function downloadAsset(gPersistantPath) {
 
-    method = "GET";
-    apiPath = "/api/attachments/" + cAttachId;// + "/" + guid();   
-    bodyContent = "";
+    var host = currentProfile.getProperty("apiUrl");
+    var method = "GET";
+    var apiPath = "/api/attachments/" + cAttachId; 
+    var bodyContent = "";
 
-    host = currentProfile.getProperty("apiUrl");
-    timestamp = Timestamp();
+    var host = currentProfile.getProperty("apiUrl");
+    var timestamp = Timestamp();
 
-    attachUri = encodeURI(host + apiPath);   
+    var attachUri = encodeURI(host + apiPath);   
 
-    basestring = BaseString(host, method, timestamp, apiPath, bodyContent);
+    var basestring = BaseString(host, method, timestamp, apiPath, bodyContent);
 
     //Authentication:  {cryptedUserLogin}:{signature}
-    authentication = Authentication(basestring);
+    var authentication = Authentication(basestring);
 
-    var fileURL = gPersistantPath + cAttachName; 
-
-    var fileTransfer = new FileTransfer();
-
-    fileTransfer.download(attachUri, fileURL,
-        function (entry) {
-            alert("download complete: " + entry.fullPath);
-            debug.log("ERROR","download complete: " + entry.toURL());
-            window.open(entry.toNativeURL(), '_blank', 'location=no,closebuttoncaption=Close,enableViewportScale=yes');
-        },
-        function (error) {
-            alert("Errore:" + error);
-            debug.log("ERROR",error);
-        },
-        false,
-        {
-            headers: {
-                "Connection": "close",
-                "Accept":"application/octet-stream",
-                "Timestamp": timestamp,
-                "Authentication": authentication,
+    if($.trim(gPersistantPath) === "")
+    {
+        $.ajax({
+            url: attachUri,
+            type: method,
+            headers: { "Accept":"application/octet-stream", "Timestamp": timestamp, "Authentication": authentication,},     
+            crossDomain: false,
+            success: function (data) { 
+                saveData(data, cAttachName);                
+            },
+            error: function (error) {
+                window.alert(error);
+                debug.log("ERROR",error);
             }
-        }            
-    );
+        });
+    }
+    else
+    {
+        var fileURL = gPersistantPath + cAttachName; 
+
+        var fileTransfer = new FileTransfer();
+
+        fileTransfer.download(attachUri, fileURL,
+            function (entry) {
+                window.alert("download complete: " + entry.fullPath);
+                debug.log("ERROR","download complete: " + entry.toURL());
+                window.open(entry.toNativeURL(), "_blank", "location=no,closebuttoncaption=Close,enableViewportScale=yes");
+            },
+            function (error) {
+                alert("Errore:" + error);
+                debug.log("ERROR",error);
+            },
+            false,
+            {
+                headers: {
+                    "Connection": "close",
+                    "Accept":"application/octet-stream",
+                    "Timestamp": timestamp,
+                    "Authentication": authentication,
+                }
+            }
+        );
+    }
 }
 
 function dnlAndOpenAttach(e)
@@ -407,10 +448,9 @@ function dnlAndOpenAttach(e)
     }
     catch(err) 
     {
+
         debug.log("ERROR",err);
         debug.log("ERROR","No device detected! It's a browser call.");
-        host = currentProfile.getProperty("apiUrl");
-        attachUri = encodeURI(host + "/api/attachments/" + cAttachId + "/test");   
-        document.location.href = attachUri;
+        onSuccess();
     }
 }

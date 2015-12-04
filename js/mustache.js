@@ -42,7 +42,7 @@
    * including its prototype, has a given property
    */
   function hasProperty (obj, propName) {
-    return obj != null && typeof obj === 'object' && (propName in obj);
+    return obj !== null && typeof obj === 'object' && (propName in obj);
   }
 
   // Workaround for https://issues.apache.org/jira/browse/COUCHDB-577
@@ -394,7 +394,7 @@
            * This is specially necessary for when the value has been set to
            * `undefined` and we want to avoid looking up parent contexts.
            **/
-          while (value != null && index < names.length) {
+          while (value !== null && index < names.length) {
             if (index === names.length - 1)
               lookupHit = hasProperty(value, names[index]);
 
@@ -444,7 +444,7 @@
     var cache = this.cache;
     var tokens = cache[template];
 
-    if (tokens == null)
+    if (tokens === null)
       tokens = cache[template] = parseTemplate(template, tags);
 
     return tokens;
@@ -523,7 +523,7 @@
       // Extract the portion of the original template that the section contains.
       value = value.call(context.view, originalTemplate.slice(token[3], token[5]), subRender);
 
-      if (value != null)
+      if (value !== null)
         buffer += value;
     } else {
       buffer += this.renderTokens(token[4], context, partials, originalTemplate);
@@ -544,19 +544,19 @@
     if (!partials) return;
 
     var value = isFunction(partials) ? partials(token[1]) : partials[token[1]];
-    if (value != null)
+    if (value !== null)
       return this.renderTokens(this.parse(value), context, partials, value);
   };
 
   Writer.prototype.unescapedValue = function unescapedValue (token, context) {
     var value = context.lookup(token[1]);
-    if (value != null)
+    if (value !== null)
       return value;
   };
 
   Writer.prototype.escapedValue = function escapedValue (token, context) {
     var value = context.lookup(token[1]);
-    if (value != null)
+    if (value !== null)
       return mustache.escape(value);
   };
 

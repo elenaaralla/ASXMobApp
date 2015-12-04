@@ -1,7 +1,7 @@
 var _LTracker = _LTracker || [];
-_LTracker.push({'logglyKey': '6d1764a0-1603-4f80-af03-7e9ea0152e93',
-'sendConsoleErrors' : true,
-'tag' : 'asm'  });
+_LTracker.push({"logglyKey": "6d1764a0-1603-4f80-af03-7e9ea0152e93",
+"sendConsoleErrors" : true,
+"tag" : "asm"  });
 
 function DebugLog ()
 {
@@ -14,7 +14,7 @@ DebugLog.prototype.log = function(level, text)
 	this.level = level;
 	this.text = text;
 
-	if(this.text == null)
+	if(this.text === null)
 		return;
 
 	if(this.level == "DEBUG")
@@ -27,7 +27,7 @@ DebugLog.prototype.log = function(level, text)
 		console.log(this.text);
 		_LTracker.push(text);
 	}
-}
+};
 
 
 /*

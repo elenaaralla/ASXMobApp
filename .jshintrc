@@ -1,0 +1,28 @@
+{
+  "esnext": false,
+  "moz": true,
+  "boss": true,
+  "node": true,
+  "validthis": true,
+  "globalstrict": false,
+  "globals": {
+    "Mustache":true,
+    "forge":true,
+    "getAbsolutePath":true,
+    "pki":true,
+    "debug":true,
+    "absPath":true,
+    "DebugLog": true,
+    "LocalFileSystem": true,
+    "cordova":true,
+    "FileTransfer":true,
+    "Profile":true,
+    "currentProfile":true,
+    "usedProfileName":true,
+    "loginProfiles":true,
+    "LoginProfiles":true,
+    "Configs":true,
+    "moment":true,
+    "$":true
+  }
+}
