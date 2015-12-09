@@ -339,17 +339,21 @@ function onSuccess(fileSystem) {
 
     try
     {
+
         if(device.platform === "iOS"){
+            window.alert("ios");
             gPersistantPath = fileSystem.root.toInternalURL();
             debug.log("ERROR","<br>IOS persistent file path: " + gPersistantPath);
         }
         else{
+            window.alert(device.platform);
             gPersistantPath = cordova.file.externalDataDirectory;
             debug.log("ERROR","<br>ANDROID persistent file path: " + gPersistantPath);
         }
     }
     catch(err) 
     {
+        window.alert("no devices");
         debug.log("ERROR",err);
         gPersistantPath = "";
     }
@@ -376,6 +380,8 @@ function saveData(data, cAttachName) {
 
 function downloadAsset(gPersistantPath) {
 
+window.alert(gPersistantPath);
+
     var host = currentProfile.getProperty("apiUrl");
     var method = "GET";
     var apiPath = "/api/attachments/" + cAttachId; 
@@ -391,8 +397,12 @@ function downloadAsset(gPersistantPath) {
     //Authentication:  {cryptedUserLogin}:{signature}
     var authentication = Authentication(basestring);
 
+    
+
+
     if($.trim(gPersistantPath) === "")
     {
+        window.alert("browser");
         $.ajax({
             url: attachUri,
             type: method,
@@ -409,6 +419,7 @@ function downloadAsset(gPersistantPath) {
     }
     else
     {
+        window.alert("cellulare");
         var fileURL = gPersistantPath + cAttachName; 
 
         var fileTransfer = new FileTransfer();
@@ -420,7 +431,7 @@ function downloadAsset(gPersistantPath) {
                 window.open(entry.toNativeURL(), "_blank", "location=no,closebuttoncaption=Close,enableViewportScale=yes");
             },
             function (error) {
-                alert("Errore:" + error);
+                window.alert("Errore:" + error);
                 debug.log("ERROR",error);
             },
             false,
@@ -443,12 +454,13 @@ function dnlAndOpenAttach(e)
 
     try
     {
+        window.alert("dnload da telefono");
         // LocalFileSystem esiste solo su telefonino; il try catch mi permette di testare anche sul browser
         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onSuccess, onError); 
     }
     catch(err) 
     {
-
+        window.alert("dnload da browser");
         debug.log("ERROR",err);
         debug.log("ERROR","No device detected! It's a browser call.");
         onSuccess();
