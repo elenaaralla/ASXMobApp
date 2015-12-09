@@ -334,7 +334,6 @@ function backToSearch(e)
 
 
 function onSuccess(fileSystem) {
-    var device;
     var gPersistantPath;
 
     try
