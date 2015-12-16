@@ -214,6 +214,7 @@ html .ui-alt-icon .ui-radio-off:after {
 .ui-icon-loading {
 	background: url("images/ajax-loader.gif");
 	background-size: 2.875em 2.875em;
+	background-color: white;
 }
 /* Swatches */
 /* A

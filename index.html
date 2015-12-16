@@ -77,7 +77,7 @@
 	}
 -->
 <script id="messagesHeaderTemplate" type="text/template">
-	<li id="search_header" data-role="list-divider" data-swatch="a" data-form="ui-bar-a" role="heading" class="ui-li-divider ui-bar-a ui-first-child"><div id="{{Id}}" class="paging"><a href="#" id="search_btn" class="search_first paging_btn ui-btn ui-shadow ui-icon-angle-double-left ui-btn-icon-notext ui-btn-inline">First</a><a href="#" id="search_btn" class="search_previous ui-btn ui-shadow ui-icon-angle-left ui-btn-icon-notext ui-btn-inline">Prev</a><span class="search_result ui-btn-inline">Messaggi <span id="page_range">1-10</span> <span id="tot_msgs" data-totres="{{TotNumResult}}">di 1278</span></span><a href="#" id="search_btn" class="search_next ui-btn ui-shadow ui-icon-angle-right ui-btn-icon-notext ui-btn-inline">Next</a><a href="#" id="search_btn" class="search_last ui-btn ui-shadow ui-icon-angle-double-right ui-btn-icon-notext ui-btn-inline">Last</a></div>
+	<li id="search_header" data-role="list-divider" data-swatch="a" data-form="ui-bar-a" role="heading" class="ui-li-divider ui-bar-a ui-first-child"><div id="{{Id}}" class="paging"><a href="#" id="search_btn" class="search_first paging_btn ui-btn ui-shadow ui-icon-angle-double-left ui-btn-icon-notext ui-btn-inline">First</a><a href="#" id="search_btn" class="search_previous ui-btn ui-shadow ui-icon-angle-left ui-btn-icon-notext ui-btn-inline">Prev</a><span class="search_result ui-btn-inline">Messaggi <span id="page_range">1-10</span> <span id="tot_msgs" data-totres="{{TotNumResult}}">di {{TotNumResult}}</span></span><a href="#" id="search_btn" class="search_next ui-btn ui-shadow ui-icon-angle-right ui-btn-icon-notext ui-btn-inline">Next</a><a href="#" id="search_btn" class="search_last ui-btn ui-shadow ui-icon-angle-double-right ui-btn-icon-notext ui-btn-inline">Last</a></div>
 	</li>
 </script>
 <script id="messagesItemTemplate" type="text/template">
@@ -151,6 +151,7 @@
 			<input type="hidden" name="cpage" id="cpage" value="1">
 			<input type="search" name="search_criteria" id="search_criteria" value="">
 			<button id="search_button" data-icon="search" data-form="ui-btn-up-a" class="ui-btn ui-btn-a ui-icon-search ui-btn-icon-left ui-shadow ui-corner-all">Search</button>
+			<div id="no_result"></div>
 			<ul id="search_result" data-role="listview" data-inset="true" class="ui-listview ui-listview-inset ui-corner-all ui-shadow">
 				<!-- message item model whith header and last item
 				<li data-role="list-divider" data-swatch="a" data-form="ui-bar-a" role="heading" class="ui-li-divider ui-bar-a ui-first-child">Search result</li>

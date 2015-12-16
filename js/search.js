@@ -1,4 +1,4 @@
-function SearchModel(id,name,lastUsed,instance)
+function SearchModel(id,name,lastUsed,instance,srcText)
 {
     this.Id = id;
     this.Name = name;
@@ -23,6 +23,8 @@ function SearchModel(id,name,lastUsed,instance)
     this.UsrIsExternal = null;
     this.UserId = 0;
     this.Instance = instance; 
+    this.Type = 2; // 2=new mobile search
+    this.Text = srcText; // seach field
 }
 
 /* click on search button -> display search result 
@@ -63,9 +65,11 @@ var Authentication = function(basestring)
 
 function search()
 {
+    $.mobile.loading( "show");
+
     var method = "POST";
     var searchApiPath = "/api/searches";   
-    var bodyContent = JSON.stringify(new SearchModel(0,"New mobile search",new Date(),guid()));
+    var bodyContent = JSON.stringify(new SearchModel(0,"New mobile search",new Date(),guid(),$("#search_criteria").val()));
 
     var timestamp = Timestamp();
     var host = currentProfile.getProperty("apiUrl");
@@ -128,6 +132,8 @@ function getSearchMessages(src_key, cpage)
 
     var searchApi = host + searchApiPath + "?asxcallback=?";
 
+    $("#no_result").hide();
+
     $.ajax({
         url: searchApi,
         type: method,
@@ -138,43 +144,66 @@ function getSearchMessages(src_key, cpage)
         dataType: "jsonp",
         success: function (data) { 
 
-            // load messages header template
-            var h_template = $("#messagesHeaderTemplate").html();
-            // bind data to template
-            var header = Mustache.to_html(h_template, data);        
-            
-            // load messages template
-            var i_template = $("#messagesItemTemplate").html();
-            // bind data to template
-            var items = Mustache.to_html(i_template, data.messagesList);
+            if(data.TotNumResult > 0)
+            {
+                // load messages header template
+                var h_template = $("#messagesHeaderTemplate").html();
+                // bind data to template
+                var header = Mustache.to_html(h_template, data);        
+                
+                // load messages template
+                var i_template = $("#messagesItemTemplate").html();
+                // bind data to template
+                var items = Mustache.to_html(i_template, data.messagesList);
 
-            // load data into ul...
-            $("#search_result").html(header + items);
-            
-            $("#page_range").html(pagerange);
+                $.mobile.loading("hide");
 
-            // and show them 
-            $("#search_result").css("margin-top","0.3em");
-            $("#search_result").show();
-            
-            $(".date").css("margin-right","0");
-            $(".ui-li-aside").css("right","1em").css("top","0.3em");                
-            
-            $("div[class='attach'][id!=attach0]").addClass("paperclip");
+                // load data into ul...
+                $("#search_result").html(header + items);
+                
+                var nMsgsFrom = pagerange.split("-")[0];
+                var nMsgsTo = pagerange.split("-")[1];
 
-            /* click on search previous page */
-            $(".search_previous").on("tap", getPreviousPage);
-            /* click on search next page */
-            $(".search_next").on("tap", getNextPage);
-            /* click on search previous page */
-            $(".search_first").on("tap", getFirstPage);
-            /* click on search next page */
-            $(".search_last").on("tap", getLastPage);
+                if(nMsgsTo > data.TotNumResult)
+                {
+                    pagerange = nMsgsFrom + "-" + data.TotNumResult;
+                }
 
+                $("#page_range").html(pagerange);
 
-            // setup click event on <li> (message) item; click on result list -> call details page 
-            $(".message").on("tap",vieMessageDetail);
-            $(".message").on("swipeleft",vieMessageDetail);
+                // and show them 
+                $("#no_result").hide();
+                $("#search_result").css("margin-top","0.3em");
+                $("#search_result").show();
+                
+                $(".date").css("margin-right","0");
+                $(".ui-li-aside").css("right","1em").css("top","0.3em");                
+                
+                $("div[class='attach'][id!=attach0]").addClass("paperclip");
+
+                if(nMsgsTo < data.TotNumResult)
+                {
+                    /* click on search previous page */
+                    $(".search_previous").on("tap", getPreviousPage);
+                    /* click on search next page */
+                    $(".search_next").on("tap", getNextPage);
+                    /* click on search previous page */
+                    $(".search_first").on("tap", getFirstPage);
+                    /* click on search next page */
+                    $(".search_last").on("tap", getLastPage);
+                }
+
+                // setup click event on <li> (message) item; click on result list -> call details page 
+                $(".message").on("tap",vieMessageDetail);
+                $(".message").on("swipeleft",vieMessageDetail);
+            }
+            else
+            {
+                $.mobile.loading("hide");
+                $("#search_result").hide();
+                $("#no_result").html("Nessun risultato.").css("margin-top","0.3em").show();   
+            }
+
         },
         error: function (e) {
             debug.log("ERROR",e);

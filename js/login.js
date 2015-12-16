@@ -1,5 +1,7 @@
 function login()
 {
+    $.mobile.loading( "show");
+
     /* verify if host is reachable and what is the server version */
     if(!checkHost())
     {
