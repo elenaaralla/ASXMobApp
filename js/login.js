@@ -29,6 +29,7 @@ function login()
                 var errMsg = "Versione del server [" + data.Server + "] non compatibile.";
                 debug.log("ERROR",errMsg);
                 $(".login-error").html(errMsg).show();
+                $.mobile.loading( "hide");
             }
         },
         error: function (e) {
@@ -46,6 +47,7 @@ function login()
             }
 
             $(".login-error").html(errMsg).show();
+            $.mobile.loading( "hide");
         }
     });
 }
@@ -61,6 +63,7 @@ function checkHost()
     {
         errorMessage = "Occorre specificare il campo host.";
         $(".login-error").html("Attenzione: " + errorMessage).show();
+        $.mobile.loading( "hide");
         return false;
     }
 
@@ -97,6 +100,7 @@ function getPublickey(host)
         var errMsg = e.status + "-" + e.statusText;
 
         $(".login-error").html(errMsg).show();
+        $.mobile.loading( "hide");
       }
     });
 }
@@ -144,6 +148,7 @@ function checkInputData()
         }
 
         $(".login-error").html("Attenzione: " + errorMessage).show();
+        $.mobile.loading( "hide");
         return false;
     }
     else

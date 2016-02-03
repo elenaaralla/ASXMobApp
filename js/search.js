@@ -65,6 +65,10 @@ var Authentication = function(basestring)
 
 function search()
 {
+    var dt = new Date($.now());
+    var initSearchTime = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+    var initSearchMsg = "Serch init at:" + initSearchTime;
+    debug.log("DEBUG",initSearchMsg);
     $.mobile.loading( "show");
 
     var method = "POST";
@@ -203,12 +207,16 @@ function getSearchMessages(src_key, cpage)
                 $("#search_result").hide();
                 $("#no_result").html("Nessun risultato.").css("margin-top","0.3em").show();   
             }
-
+                var dt = new Date($.now());
+                var endSearchTime = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+                var endSearchMsg = "Serch ended at:" + endSearchTime;
+                debug.log("DEBUG",endSearchMsg);
         },
         error: function (e) {
             debug.log("ERROR",e);
             var errMsg = e.status + "-" + e.statusText;
             $(".login-error").html(errMsg).show();
+            debug.log("DEBUG",new Date($.now()));
         },
 
     });     
@@ -323,6 +331,17 @@ var GetMessageDetail = function(msg_key)
 
             $("#attachments").css("margin-top","0.3em");
 
+            $(".attachment").each(function( index ) {
+
+                $(this).css("margin-top",".9em");
+
+                if($(this).attr("data-deleted") == "1") //attachment deleted
+                {
+                    alert_msg = "<strong>L'allegato '" + $(this).attr("data-attachFileName") + "'' è stato cancellato.</strong>";
+                    $(this).html(alert_msg);
+                    $(this).css("padding",".7em 1em").css("white-space","normal").css("background-color","orange");
+                }
+            });
             /* make styles adjustment */
             $("#back_to_search").css("margin-top","1.5em");
             $("#txt_message").css("white-space","normal");
@@ -340,7 +359,6 @@ var GetMessageDetail = function(msg_key)
 
             /* click on attachment */
             $(".attachment").on("tap", dnlAndOpenAttach);
-
         },
         error: function (e) {
             debug.log("ERROR",e);
@@ -367,21 +385,17 @@ function onSuccess(fileSystem) {
 
     try
     {
-
         if(device.platform === "iOS"){
-            window.alert("ios");
             gPersistantPath = fileSystem.root.toInternalURL();
             debug.log("ERROR","<br>IOS persistent file path: " + gPersistantPath);
         }
         else{
-            window.alert(device.platform);
             gPersistantPath = cordova.file.externalDataDirectory;
             debug.log("ERROR","<br>ANDROID persistent file path: " + gPersistantPath);
         }
     }
     catch(err) 
     {
-        window.alert("no devices");
         debug.log("ERROR",err);
         gPersistantPath = "";
     }
@@ -407,9 +421,6 @@ function saveData(data, cAttachName) {
 
 
 function downloadAsset(gPersistantPath) {
-
-window.alert(gPersistantPath);
-
     var host = currentProfile.getProperty("apiUrl");
     var method = "GET";
     var apiPath = "/api/attachments/" + cAttachId; 
@@ -425,12 +436,8 @@ window.alert(gPersistantPath);
     //Authentication:  {cryptedUserLogin}:{signature}
     var authentication = Authentication(basestring);
 
-    
-
-
     if($.trim(gPersistantPath) === "")
     {
-        window.alert("browser");
         $.ajax({
             url: attachUri,
             type: method,
@@ -440,21 +447,19 @@ window.alert(gPersistantPath);
                 saveData(data, cAttachName);                
             },
             error: function (error) {
-                window.alert(error);
                 debug.log("ERROR",error);
             }
         });
     }
     else
     {
-        window.alert("cellulare");
         var fileURL = gPersistantPath + cAttachName; 
 
         var fileTransfer = new FileTransfer();
 
         fileTransfer.download(attachUri, fileURL,
             function (entry) {
-                window.alert("download complete: " + entry.fullPath);
+                window.alert("download completato: " + entry.fullPath);
                 debug.log("ERROR","download complete: " + entry.toURL());
                 window.open(entry.toNativeURL(), "_blank", "location=no,closebuttoncaption=Close,enableViewportScale=yes");
             },
@@ -479,18 +484,20 @@ function dnlAndOpenAttach(e)
 {
     cAttachId = this.id;
     cAttachName = $(this).attr("data-attachFileName");
-
-    try
+    var cAttachDeleted = $(this).attr("data-deleted");
+    
+    if(cAttachDeleted != "1" )
     {
-        window.alert("dnload da telefono");
-        // LocalFileSystem esiste solo su telefonino; il try catch mi permette di testare anche sul browser
-        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onSuccess, onError); 
-    }
-    catch(err) 
-    {
-        window.alert("dnload da browser");
-        debug.log("ERROR",err);
-        debug.log("ERROR","No device detected! It's a browser call.");
-        onSuccess();
+        try
+        {
+            // LocalFileSystem esiste solo su telefonino; il try catch mi permette di testare anche sul browser
+            window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onSuccess, onError); 
+        }
+        catch(err) 
+        {
+            debug.log("ERROR",err);
+            debug.log("ERROR","No device detected! It's a browser call.");
+            onSuccess();
+        }
     }
 }

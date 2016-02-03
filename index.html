@@ -113,8 +113,8 @@
 </script>	
 <script id="attachmentsItemTemplate" type="text/template">
 	{{#attachments}}
-		<li class="attachment" id="{{Id}}" data-msgId="{{MessageId}}" data-attachFileName="{{Name}}">
-			<a href="#">{{Name}}</a>
+		<li class="attachment ui-first-child ui-last-child" id="{{Id}}" data-msgId="{{MessageId}}" data-attachFileName="{{Name}}" data-deleted={{Deleted}}>
+			<a href="#" class="ui-btn ui-btn-icon-right ui-icon-carat-r">{{Name}}</a>
 		</li>	
 	{{/attachments}}
 </script>	
