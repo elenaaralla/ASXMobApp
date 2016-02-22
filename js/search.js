@@ -367,7 +367,7 @@ var GetMessageDetail = function(msg_key)
             $("#d_subject").html($("#sbj").html());
 
             /* click on "back to search" -> return to seach page */
-            $("#back_to_search").on("tap", backToSearch);
+            //$("#back_to_search").on("tap", backToSearch);
             $("#message_detail").on("swiperight", backToSearch);
 
             /* click on attachment */
@@ -389,7 +389,6 @@ function newSearch()
 
 function backToSearch(e)
 {
-    e.stopPropagation();
     $( ":mobile-pagecontainer" ).pagecontainer( "change", "#search_page", { transition : "none" } );
     if($(".msg_selected").offset())
     {
