@@ -287,8 +287,6 @@ function getLastPage(e)
 
 function viewMessageDetail()
 {
-    numTest += 1;
-    $("#search_criteria").val(numTest);    
     $(this).addClass("msg_selected");
     // get message detail via ajax
     GetMessageDetail(this.id);
@@ -396,11 +394,10 @@ function backToSearch(e)
     if($(".msg_selected").offset())
     {
         var scrollto = $(".msg_selected").offset().top;
+        $(".msg_selected").removeClass("msg_selected");
         $.mobile.silentScroll(scrollto);
-        //$(".msg_selected").removeClass("msg_selected");
     }
 }
-
 
 function onSuccess(fileSystem) {
     var gPersistantPath;

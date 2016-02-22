@@ -4,9 +4,7 @@ document.addEventListener("deviceready", onDeviceReady, false);
 // debug - per provare senza ripple document.addEventListener("DOMContentLoaded", onDeviceReady, false);
 
 
-var numtest, usedProfileName, loginProfiles, configs, currentProfile, debug, cpage, totResult, cAttachId, cAttachName;
-
-numTest=0;
+var usedProfileName, loginProfiles, configs, currentProfile, debug, cpage, totResult, cAttachId, cAttachName;
 
 function initApp()
 {
