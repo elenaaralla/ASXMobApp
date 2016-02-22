@@ -351,7 +351,17 @@ var GetMessageDetail = function(msg_key)
             $("#sbj").css("white-space","normal");      
             
             // show detail page
-            //$.mobile.changePage("#details_page");
+            if($("#html_message").html() !== "")
+            {
+                $("#html_message").show();
+                $("#txt_message").hide();
+            }
+            else
+            {
+                $("#html_message").hide();
+                $("#txt_message").show();
+            }
+
             $( ":mobile-pagecontainer" ).pagecontainer( "change", "#details_page", { transition : "none" } );
 
             $("#d_subject").html($("#sbj").html());
@@ -379,6 +389,7 @@ function newSearch()
 
 function backToSearch(e)
 {
+    e.stopPropagation();
     $( ":mobile-pagecontainer" ).pagecontainer( "change", "#search_page", { transition : "none" } );
     if($(".msg_selected").offset())
     {

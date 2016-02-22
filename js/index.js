@@ -57,34 +57,6 @@ function onDeviceReady() {
         $(".login-error").hide();
      } );
 
-    /*
-    $("#search_page").on( "pageshow", function() {
-        
-        if($(".msg_selected").offset())
-        {
-            var scrollto = $(".msg_selected").offset().top;
-            $.mobile.silentScroll(scrollto);
-            $(".msg_selected").removeClass("msg_selected");
-        }
-
-     } );    */
-
-
-    $("#details_page").on( "pageshow", function() {
-        
-        if($("#html_message").html() !== "")
-        {
-            $("#html_message").show();
-            $("#txt_message").hide();
-        }
-        else
-        {
-            $("#html_message").hide();
-            $("#txt_message").show();
-        }
-
-     } );    
-
     /* click on login -> call search page */
     $("#login_button").on("tap", login);
 
