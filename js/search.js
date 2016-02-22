@@ -287,6 +287,8 @@ function getLastPage(e)
 
 function viewMessageDetail()
 {
+    numTest += 1;
+    $("#search_criteria").val(numTest);    
     $(this).addClass("msg_selected");
     // get message detail via ajax
     GetMessageDetail(this.id);
@@ -395,7 +397,7 @@ function backToSearch(e)
     {
         var scrollto = $(".msg_selected").offset().top;
         $.mobile.silentScroll(scrollto);
-        $(".msg_selected").removeClass("msg_selected");
+        //$(".msg_selected").removeClass("msg_selected");
     }
 }
 
