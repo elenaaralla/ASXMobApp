@@ -267,6 +267,7 @@ function logInASX(asxpublicKey,host,username,password)
                 saveUserData(host,username,cryptedCredentials,passwordHash);
                 // go to search page (simple search)
                 //$.mobile.changePage("#search_page");
+                clear_searchPage();
                 $( ":mobile-pagecontainer" ).pagecontainer( "change", "#search_page", { transition : "none" } );
             }
         },
@@ -274,8 +275,16 @@ function logInASX(asxpublicKey,host,username,password)
             debug.log("ERROR",e);
             var errMsg = e.status + "-" + e.statusText;
             $(".login-error").html(errMsg).show();
+            $.mobile.loading( "hide");
         }
     });
+}
+
+function clear_searchPage()
+{
+    $("#cpage").val("1");
+    $("#search_criteria").val("");
+    $("#search_result").html("");
 }
 
 function saveUserData(host,username,cryptedCredential, passwordHash)

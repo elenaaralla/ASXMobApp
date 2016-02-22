@@ -57,7 +57,7 @@ function onDeviceReady() {
         $(".login-error").hide();
      } );
 
-
+    /*
     $("#search_page").on( "pageshow", function() {
         
         if($(".msg_selected").offset())
@@ -67,7 +67,7 @@ function onDeviceReady() {
             $(".msg_selected").removeClass("msg_selected");
         }
 
-     } );    
+     } );    */
 
 
     $("#details_page").on( "pageshow", function() {

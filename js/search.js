@@ -187,19 +187,22 @@ function getSearchMessages(src_key, cpage)
 
                 if(nMsgsTo < data.TotNumResult)
                 {
-                    /* click on search previous page */
-                    $(".search_previous").on("tap", getPreviousPage);
                     /* click on search next page */
                     $(".search_next").on("tap", getNextPage);
                     /* click on search previous page */
-                    $(".search_first").on("tap", getFirstPage);
-                    /* click on search next page */
                     $(".search_last").on("tap", getLastPage);
                 }
 
+                if (nMsgsFrom > 1) {
+                    /* click on search previous page */
+                    $(".search_previous").on("tap", getPreviousPage);
+                    $(".search_first").on("tap", getFirstPage);
+                    /* click on search next page */
+                }
+
                 // setup click event on <li> (message) item; click on result list -> call details page 
-                $(".message").on("tap",vieMessageDetail);
-                $(".message").on("swipeleft",vieMessageDetail);
+                $(".message").on("tap",viewMessageDetail);
+                $(".message").on("swipeleft",viewMessageDetail);
             }
             else
             {
@@ -282,7 +285,7 @@ function getLastPage(e)
     getSearchMessages(searchId, TotPages);
 }
 
-function vieMessageDetail()
+function viewMessageDetail()
 {
     $(this).addClass("msg_selected");
     // get message detail via ajax
@@ -377,6 +380,12 @@ function newSearch()
 function backToSearch(e)
 {
     $( ":mobile-pagecontainer" ).pagecontainer( "change", "#search_page", { transition : "none" } );
+    if($(".msg_selected").offset())
+    {
+        var scrollto = $(".msg_selected").offset().top;
+        $.mobile.silentScroll(scrollto);
+        $(".msg_selected").removeClass("msg_selected");
+    }
 }
 
 

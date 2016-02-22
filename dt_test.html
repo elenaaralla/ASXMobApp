@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css" />
+
+        <script src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
+        <title>Data Tables test</title>
+    </head>
+    <body>
+        <form>
+            <input type="hidden" name="cpage" id="cpage" value="1">
+            <input type="search" name="search_criteria" id="search_criteria" value="test">
+            <input type="hidden" name="LastNDays" id="LastNDays" value="">
+        </form>
+        <table id="example" class="display" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Subject</th>
+                    <th>Date</th>
+                    <th>Size</th>
+                    <th>MsgPriority</th>
+                    <th>NrAttachments</th>
+                    <th>MsgLocked</th>
+                    <th>HtmlBody</th>
+                    <th>TextBody</th>
+                    <th>AttachmentsList</th>                  
+                </tr>
+            </thead>
+        </table>
+
+        <script>
+            $(document).ready(function() {
+                 $('#example').DataTable( {
+                    "ajax":
+                    {
+                        "url":"objects.txt",
+                        "dataSrc":"messagesList.messages"                         
+                    },
+                    "columns": [
+                        { "data": "Id" },
+                        { "data": "From" },
+                        { "data": "To" },
+                        { "data": "Subject" },
+                        { "data": "Date" },
+                        { "data": "MsgSize" },
+                        { "data": "MsgPriority" },
+                        { "data": "NrAttachments" },
+                        { "data": "MsgLocked" },
+                        { "data": "HtmlBody" },
+                        { "data": "TextBody" },
+                        { "data": "AttachmentsList" },    
+                    ]                    
+                } );
+            } );
+        </script>
+    </body>
+</html>
+
+
+<!---
+
+
+    /*$('#example').DataTable( {
+        "processing":true,
+        "serverSide":true,
+        "ajax": {
+        "url": searchApi,
+        "type": method,
+        "headers": {"Timestamp":timestamp, "Authentication":authentication},
+        "data": {"page_range":pagerange, "sort_column": "colDate", "sort_type":"1"},
+        "processData": false,        
+        "crossDomain": false,
+        "dataType": "jsonp",
+        "dataSrc":""
+        },
+        "columns": [
+        {
+          "data": "Id",
+          "defaultContent": "-",
+          "visible":false
+        },
+        {
+          "data": "From",
+          "defaultContent": ""
+        },
+        {
+          "data": "To",
+          "defaultContent": ""
+        },
+        {
+          "data": "Subject",
+          "defaultContent": ""
+        },
+        {
+          "data": "Date",
+          "defaultContent": ""
+        },  
+        {
+          "data": "MsgSize",
+          "defaultContent": "0"
+        },  
+        {
+          "data": "MsgPriority",
+          "defaultContent": "0"
+        },          
+        {
+          "data": "NrAttachments",
+          "defaultContent": "0"
+        }, 
+        {
+          "data": "MsgLocked",
+          "defaultContent": "0"
+        },  
+        {
+          "data": "HtmlBody",
+          "defaultContent": "-"
+        },      
+        {
+          "data": "TextBody",
+          "defaultContent": "-"
+        },         
+        {
+          "data": "AttachmentsList",
+          "defaultContent": "0"
+        },  
+      ]
+    } );*/
+
+--->
