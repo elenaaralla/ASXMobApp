@@ -32,6 +32,7 @@ Configs.prototype.get = function()
 
 Configs.prototype.getProperty = function(propertyKey)
 {
+	this.get();
 	return this[propertyKey];
 };
 

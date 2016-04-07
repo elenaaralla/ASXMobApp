@@ -16,8 +16,17 @@ function initApp()
         loginProfiles.save();
     }
 
-    configs = new Configs(20, 20, 1);
-    configs.save();
+    savedConfigs = JSON.parse(window.localStorage.getItem("configs"));
+    
+    if(savedConfigs == null)
+    {   
+        configs = new Configs(20,20);
+        configs.save();
+    }
+    else
+    {
+        configs = new Configs(savedConfigs["timeout"],savedConfigs["resultsNumber"]);;
+    }
 
     debug = new DebugLog();
 }
@@ -57,11 +66,31 @@ function onDeviceReady() {
         $(".login-error").hide();
      } );
 
+
+    $("#search_page").on( "pagebeforeshow", function() {
+        
+        var numItemPerPage = configs.getProperty("resultsNumber");
+
+        var el = $('#num_result_x_pages');
+
+        if(numItemPerPage != null && numItemPerPage != el.val())
+        {
+            // Select the relevant option, de-select any others
+            el.val(numItemPerPage).attr('selected', true).siblings('option').removeAttr('selected');
+
+            // jQM refresh
+            el.selectmenu("refresh", true);
+        }    
+     } );    
+
     /* click on login -> call search page */
     $("#login_button").on("tap", login);
 
     /* get messages data via ajax */
-    $("#search_button").on("tap", search);
+    $("#stop_search_button").on("tap", stopCurrentSearch);
+
+    /* get messages data via ajax */
+    $("#search_button").on("tap", search);    
 
     /* click on list icon (up-left) -> view menu */
     $(".menu_btn").on("tap", viewMenu);

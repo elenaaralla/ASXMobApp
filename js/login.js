@@ -268,6 +268,7 @@ function logInASX(asxpublicKey,host,username,password)
                 // go to search page (simple search)
                 //$.mobile.changePage("#search_page");
                 clear_searchPage();
+
                 $( ":mobile-pagecontainer" ).pagecontainer( "change", "#search_page", { transition : "none" } );
             }
         },

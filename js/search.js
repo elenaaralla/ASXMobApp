@@ -65,6 +65,11 @@ var Authentication = function(basestring)
 
 function search()
 {
+    stopCurrentSearch();
+
+    numResultsToDisplay = $("#num_result_x_pages").val();
+    configs.setProperty("resultsNumber",numResultsToDisplay);
+
     var dt = new Date($.now());
     var initSearchTime = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
     var initSearchMsg = "Serch init at:" + initSearchTime;
@@ -94,6 +99,7 @@ function search()
         success: function (data) {
             debug.log("DEBUG",data);
             getSearchMessages(data.Id);
+            $("#current_search_id").val(data.Id);
         },
         error: function (e) {
             debug.log("ERROR",e);
@@ -112,6 +118,8 @@ var PageRange = function (cpage)
 
     return nMsgsFrom + "-" + nMsgsTo;
 };
+
+var timerId=0;
 
 function getSearchMessages(src_key, cpage)
 {
@@ -142,19 +150,133 @@ function getSearchMessages(src_key, cpage)
         url: searchApi,
         type: method,
         headers: {"Timestamp":timestamp, "Authentication":authentication},
-        data: {"page_range":pagerange, "sort_column": "colDate", "sort_type":"1"},
+        data: {"action":"", "page_range":pagerange, "sort_column": "colDate", "sort_type":"1"},
         processData: true,        
         crossDomain: false,
         dataType: "jsonp",
         success: function (data) { 
-
             if(data.TotNumResult > 0)
             {
                 // load messages header template
                 var h_template = $("#messagesHeaderTemplate").html();
                 // bind data to template
-                var header = Mustache.to_html(h_template, data);        
+                var header = Mustache.to_html(h_template, data);    
+                // load messages template
+                var i_template = $("#messagesItemTemplate").html();
+                // bind data to template
+                var items = Mustache.to_html(i_template, data.messagesList);
+
+                $.mobile.loading("hide");
+
+                // load data into ul...
+                $("#search_result").html(header + items);
                 
+                var nMsgsFrom = pagerange.split("-")[0];
+                var nMsgsTo = pagerange.split("-")[1];
+
+                if(nMsgsTo > data.TotNumResult)
+                {
+                    pagerange = nMsgsFrom + "-" + data.TotNumResult;
+                }
+
+                $("#page_range").html(pagerange);
+
+                // and show them 
+                $("#no_result").hide();
+                $("#search_result").css("margin-top","0.3em");
+                $("#msgs_loader img").css("margin-bottom","-3px");
+                $("#search_result").show();
+                //show hourglass
+                $("#msgs_loader").show();
+                $(".date").css("margin-right","0");
+                $(".ui-li-aside").css("right","1em").css("top","0.3em");                
+                
+                $("div[class='attach'][id!=attach0]").addClass("paperclip");
+
+                if(nMsgsTo < data.TotNumResult)
+                {
+                    // click on search next page
+                    $(".search_next").on("tap", getNextPage);
+                    // click on search previous page
+                    $(".search_last").on("tap", getLastPage);
+                }
+
+                if (nMsgsFrom > 1) {
+                    // click on search previous page
+                    $(".search_previous").on("tap", getPreviousPage);
+                    $(".search_first").on("tap", getFirstPage);
+                    // click on search next page
+                }
+
+                // setup click event on <li> (message) item; click on result list -> call details page 
+                $(".message").on("tap",viewMessageDetail);
+                $(".message").on("swipeleft",viewMessageDetail);
+
+                //call function to refresh search count
+                refreshMessagesCount(src_key, cpage);
+            }
+            else
+            {
+                $.mobile.loading("hide");
+                $("#search_result").hide();
+                $("#no_result").html("Nessun risultato.").css("margin-top","0.3em").show();   
+            }
+
+            var dt = new Date($.now());
+            var endSearchTime = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+            var endSearchMsg = "Serch ended at:" + endSearchTime;
+            debug.log("DEBUG",endSearchMsg);
+        },
+        error: function (e) {  
+            debug.log("ERROR",e);
+            var errMsg = e.status + "-" + e.statusText;
+            $(".login-error").html(errMsg).show();
+            debug.log("DEBUG",new Date($.now()));
+        },
+    }); 
+}
+
+
+function dispSearchMessages(src_key, cpage)
+{
+    if(!cpage || cpage <= 0)
+    {
+        cpage = 1;
+    }
+
+    var pagerange = PageRange(cpage);
+
+    var method = "GET";
+    var searchApiPath = "/api/searches/" + src_key + "/messages";   
+    var bodyContent = "";
+
+    var host = currentProfile.getProperty("apiUrl");
+    var timestamp = Timestamp();
+
+    var basestring = BaseString(host, method, timestamp, searchApiPath, bodyContent);
+
+    //Authentication:  {cryptedUserLogin}:{signature}
+    var authentication = Authentication(basestring);
+
+    var searchApi = host + searchApiPath + "?asxcallback=?";
+
+    $("#no_result").hide();
+
+    $.ajax({
+        url: searchApi,
+        type: method,
+        headers: {"Timestamp":timestamp, "Authentication":authentication},
+        data: {"action":"display_only", "page_range":pagerange, "sort_column": "colDate", "sort_type":"1"},
+        processData: true,        
+        crossDomain: false,
+        dataType: "jsonp",
+        success: function (data) { 
+            if(data.TotNumResult > 0)
+            {
+                // load messages header template
+                var h_template = $("#messagesHeaderTemplate").html();
+                // bind data to template
+                var header = Mustache.to_html(h_template, data);    
                 // load messages template
                 var i_template = $("#messagesItemTemplate").html();
                 // bind data to template
@@ -179,7 +301,7 @@ function getSearchMessages(src_key, cpage)
                 $("#no_result").hide();
                 $("#search_result").css("margin-top","0.3em");
                 $("#search_result").show();
-                
+
                 $(".date").css("margin-right","0");
                 $(".ui-li-aside").css("right","1em").css("top","0.3em");                
                 
@@ -187,17 +309,17 @@ function getSearchMessages(src_key, cpage)
 
                 if(nMsgsTo < data.TotNumResult)
                 {
-                    /* click on search next page */
+                    // click on search next page
                     $(".search_next").on("tap", getNextPage);
-                    /* click on search previous page */
+                    // click on search previous page
                     $(".search_last").on("tap", getLastPage);
                 }
 
                 if (nMsgsFrom > 1) {
-                    /* click on search previous page */
+                    // click on search previous page
                     $(".search_previous").on("tap", getPreviousPage);
                     $(".search_first").on("tap", getFirstPage);
-                    /* click on search next page */
+                    // click on search next page
                 }
 
                 // setup click event on <li> (message) item; click on result list -> call details page 
@@ -210,27 +332,174 @@ function getSearchMessages(src_key, cpage)
                 $("#search_result").hide();
                 $("#no_result").html("Nessun risultato.").css("margin-top","0.3em").show();   
             }
-                var dt = new Date($.now());
-                var endSearchTime = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
-                var endSearchMsg = "Serch ended at:" + endSearchTime;
-                debug.log("DEBUG",endSearchMsg);
+
+            var dt = new Date($.now());
+            var endSearchTime = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+            var endSearchMsg = "Serch ended at:" + endSearchTime;
+            debug.log("DEBUG",endSearchMsg);
         },
-        error: function (e) {
+        error: function (e) {  
             debug.log("ERROR",e);
             var errMsg = e.status + "-" + e.statusText;
             $(".login-error").html(errMsg).show();
             debug.log("DEBUG",new Date($.now()));
         },
-
-    });     
+    }); 
 }
 
+function stopCurrentSearch()
+{
+    //elimino il timer id che richiede al server 
+    // l'aggiornamento del numero di risultati
+    clearTimeout(timerId);
+
+    src_key = $("#current_search_id").val();
+
+    if(src_key==0)//non ci sono ricerche in corso
+    {
+        return;
+    }
+
+    if(!cpage || cpage <= 0)
+    {
+        cpage = 1;
+    }
+
+    var pagerange = PageRange(cpage);
+
+    var method = "GET";
+    var searchApiPath = "/api/searches/" + src_key + "/messages/true";   
+    var bodyContent = "";
+
+    var host = currentProfile.getProperty("apiUrl");
+    var timestamp = Timestamp();
+
+    var basestring = BaseString(host, method, timestamp, searchApiPath, bodyContent);
+
+    //Authentication:  {cryptedUserLogin}:{signature}
+    var authentication = Authentication(basestring);
+
+    var searchApi = host + searchApiPath + "?asxcallback=?";
+
+    $("#no_result").hide();
+
+    //effettuo la chiamata per fermare l'eventuale processo di ricerca
+    //sul server
+    $.ajax({
+        url: searchApi,
+        type: method,
+        headers: {"Timestamp":timestamp, "Authentication":authentication},
+        data: {"action":"stop_search", "page_range":pagerange, "sort_column": "colDate", "sort_type":"1"},
+        processData: true,        
+        crossDomain: false,
+        dataType: "jsonp",
+        success: function (data) { 
+            if(data.TotNumResult > 0)
+            {
+                $("#tot_msgs").html(" di " + data.TotNumResult);
+                $("#tot_msgs").data("totres",data.TotNumResult);
+                $("#msgs_loader").hide();
+            }
+            else
+            {
+                $.mobile.loading("hide");
+                $("#search_result").hide();
+                $("#no_result").html("Nessun risultato.").css("margin-top","0.3em").show();   
+            }
+
+            var dt = new Date($.now());
+            var endSearchTime = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+            var endSearchMsg = "Serch ended at:" + endSearchTime;
+            debug.log("DEBUG",endSearchMsg);
+        },
+        error: function (e) {  
+            debug.log("ERROR",e);
+            var errMsg = e.status + "-" + e.statusText;
+            $(".login-error").html(errMsg).show();
+            debug.log("DEBUG",new Date($.now()));
+        },
+    }); 
+
+
+}
+
+function refreshMessagesCount(src_key, cpage)
+{
+    if(!cpage || cpage <= 0)
+    {
+        cpage = 1;
+    }
+
+    var pagerange = PageRange(cpage);
+
+    var method = "GET";
+    var searchApiPath = "/api/searches/" + src_key + "/messages/true";   
+    var bodyContent = "";
+
+    var host = currentProfile.getProperty("apiUrl");
+    var timestamp = Timestamp();
+
+    var basestring = BaseString(host, method, timestamp, searchApiPath, bodyContent);
+
+    //Authentication:  {cryptedUserLogin}:{signature}
+    var authentication = Authentication(basestring);
+
+    var searchApi = host + searchApiPath + "?asxcallback=?";
+
+    $("#no_result").hide();
+
+    $.ajax({
+        url: searchApi,
+        type: method,
+        headers: {"Timestamp":timestamp, "Authentication":authentication},
+        data: {"action":"refresh_count", "page_range":pagerange, "sort_column": "colDate", "sort_type":"1"},
+        processData: true,        
+        crossDomain: false,
+        dataType: "jsonp",
+        success: function (data) { 
+            if(data.TotNumResult > 0)
+            {
+                if(data.Ended != 1)
+                {
+                    timerId = setTimeout(function(){
+                        refreshMessagesCount(src_key, cpage);
+                    }, 2000);
+                }
+                else
+                {
+                    $("#msgs_loader").hide();
+                    clearTimeout(timerId);
+                }
+
+                $("#tot_msgs").html(" di " + data.TotNumResult); 
+                $("#tot_msgs").data("totres",data.TotNumResult);             
+            }
+            else
+            {
+                $.mobile.loading("hide");
+                $("#search_result").hide();
+                $("#no_result").html("Nessun risultato.").css("margin-top","0.3em").show();   
+            }
+
+            var dt = new Date($.now());
+            var endSearchTime = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+            var endSearchMsg = "Serch ended at:" + endSearchTime;
+            debug.log("DEBUG",endSearchMsg);
+        },
+        error: function (e) {  
+            debug.log("ERROR",e);
+            var errMsg = e.status + "-" + e.statusText;
+            $(".login-error").html(errMsg).show();
+            debug.log("DEBUG",new Date($.now()));
+        },
+    }); 
+}
 
 function getFirstPage(e)
 {
     var searchId = this.parentNode.id;
     $("input#cpage").val("1");
-    getSearchMessages(searchId, 1);
+    dispSearchMessages(searchId, 1);
 }
 
 function getPreviousPage(e)
@@ -249,7 +518,7 @@ function getPreviousPage(e)
     if (page > 0)
     {
        $("input#cpage").val(page);
-       getSearchMessages(searchId, page);
+       dispSearchMessages(searchId, page);
     }
 }
 
@@ -269,7 +538,7 @@ function getNextPage(e)
     if (page <= TotPages)
     {
        $("input#cpage").val(page);
-       getSearchMessages(searchId, page);
+       dispSearchMessages(searchId, page);
     }
 }
 
@@ -282,7 +551,7 @@ function getLastPage(e)
     var TotPages = Math.floor(totMsgs/numResultXPage) + 1;
 
     $("input#cpage").val(TotPages);
-    getSearchMessages(searchId, TotPages);
+    dispSearchMessages(searchId, TotPages);
 }
 
 function viewMessageDetail()
