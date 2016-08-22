@@ -26,7 +26,15 @@
     <preference name="android-installLocation" value="auto" />
     <preference name="AndroidPersistentFileLocation" value="Internal" />
     <preference name="iosPersistentFileLocation" value="Library" />    
-
+    <!-- To select which of the three Windows platforms you target with your build, use the new windows-appx-target config.xml preference -->
+    <!-- Windows 10 (default): -->
+    <preference name="windows-appx-target" value="uap" />
+    <!-- Windows 8.1: -->
+    <preference name="windows-appx-target" value="8.1-win" />
+    <!-- Windows Phone 8.1: -->
+    <preference name="windows-appx-target" value="8.1-phone" />
+    <!-- Additionally you can select the architecture that your build targets. Valid values are anycpu, arm, x86, and x64 -->  
+    <preference name="windows-arch" value="anycpu" />
     
     <gap:plugin name="cordova-plugin-console" version="1.0.1" source = "npm"/>
     <gap:plugin name="cordova-plugin-device-orientation" version="1.0.1" source = "npm"/> 
